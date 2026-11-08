@@ -405,18 +405,42 @@ def update_mastery(
             SkillMastery.skill == skill,
         )
     )
+
     if record is None:
-        record = SkillMastery(student_id=student_id, skill=skill, mastery=50.0)
+        record = SkillMastery(
+            student_id=student_id,
+            skill=skill,
+            mastery=50.0,
+            correct_answers=0,
+            incorrect_answers=0,
+        )
+
         database.add(record)
+
+    # Defensive handling for older rows that might contain NULL.
+    if record.correct_answers is None:
+        record.correct_answers = 0
+
+    if record.incorrect_answers is None:
+        record.incorrect_answers = 0
+
+    if record.mastery is None:
+        record.mastery = 50.0
 
     if correct:
         record.correct_answers += 1
-        record.mastery = min(100.0, record.mastery + 5.0)
+        record.mastery = min(
+            100.0,
+            record.mastery + 5.0,
+        )
     else:
         record.incorrect_answers += 1
-        record.mastery = max(0.0, record.mastery - 3.0)
-    return record
+        record.mastery = max(
+            0.0,
+            record.mastery - 3.0,
+        )
 
+    return record
 
 def add_reward(
     database: Session,
