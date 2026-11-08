@@ -3,7 +3,7 @@ services:
     name: mathquest-game
     runtime: python
     buildCommand: pip install -r requirements.txt && python -m pytest -q
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    startCommand: python scripts/diagnose_startup.py && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
