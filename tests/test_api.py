@@ -11,8 +11,10 @@ def build_client(tmp_path):
 
     sys.modules.pop("app.main", None)
     module = importlib.import_module("app.main")
-    return TestClient(module.app)
-
+   return TestClient(
+    module.app,
+    base_url="https://testserver",
+)
 
 def test_health_check(tmp_path):
     with build_client(tmp_path) as client:
