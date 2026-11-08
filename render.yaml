@@ -10,8 +10,6 @@ services:
         fromDatabase:
           name: mathquest-db
           property: connectionString
-      - key: SECRET_KEY
-        generateValue: true
 
 databases:
   - name: mathquest-db
