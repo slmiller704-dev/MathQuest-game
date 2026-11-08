@@ -236,6 +236,10 @@ def get_or_create_profile(
             variant=start_request.variant,
         )
         database.add(profile)
+        
+        # Insert the parent profile before creating records that
+        # reference profile.id through a foreign key.
+        database.flush()
         response.set_cookie(
             key="mathquest_profile_id",
             value=profile_id,
