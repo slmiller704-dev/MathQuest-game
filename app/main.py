@@ -442,22 +442,27 @@ def generate_problem(
                 float(2 * (width + height)),
                 skill,
                 "Add all four sides, or double the sum of length and width.",
-            (
-                )
+            )
 
-    if grade == 3 and skill == "two_step":
-    starting = random.randint(20, 60)
-    added = random.randint(5, 20)
-    removed = random.randint(2, min(added + 5, 20))
-    expected = starting + added - removed
+        if skill == "two_step":
+            starting = random.randint(20, 60)
+            added = random.randint(5, 20)
+            removed = random.randint(
+                2,
+                min(added + 5, 20),
+            )
 
-    return (
-        f"A player had {starting} coins, earned {added} more, "
-        f"and spent {removed}. How many coins remain?",
-        float(expcted),
-        skill,
-        "First add the earned coins, then subtract the spent coins.",
-           )
+            expected = starting + added - removed
+
+            return (
+                f"A player had {starting} coins, "
+                f"earned {added} more, and spent {removed}. "
+                f"How many coins remain?",
+                float(expected),
+                skill,
+                "First add the earned coins, "
+                "then subtract the spent coins.",
+            )
 
         if skill == "patterns":
             start = random.randint(1, 10)
