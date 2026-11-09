@@ -21,7 +21,18 @@
     .ghost{background:#244464;color:#fff}
     .fighters{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:25px 0}
     .fighter{text-align:center}
-    .avatar-frame{margin:auto;width:min(260px,38vw);aspect-ratio:1;border-radius:50%;overflow:hidden;border:5px solid #ffffff55;box-shadow:0 0 35px #56d8ff55;background:#07182b;animation:float 2.4s ease-in-out infinite}
+    .avatar-frame {
+    margin: auto;
+    width: min(300px, 42vw);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #ffffff55;
+    box-shadow: 0 0 25px #56d8ff55;
+    background: #07182b;
+    animation: float 2.4s ease-in-out infinite;
+    }
+    border-radius:50%;overflow:hidden;border:5px solid #ffffff55;box-shadow:0 0 35px #56d8ff55;background:#07182b;animation:float 2.4s ease-in-out infinite}
     .character-preview{width:100%;height:100%;object-fit:cover;object-position:top center;opacity:1;transform:scale(1);transition:opacity .22s ease,transform .22s ease}
     .character-preview.is-switching{opacity:0;transform:scale(.96)}
     .enemy{margin:auto;width:min(260px,38vw);aspect-ratio:1;border-radius:50%;border:5px solid #ffffff55;background:radial-gradient(circle,#b34dff,#361650 70%);display:grid;place-items:center;font-size:5rem;animation:pulse 1.5s infinite}
@@ -41,7 +52,25 @@
     @keyframes pulse{50%{box-shadow:0 0 50px #b34dff}}
     @keyframes strike{50%{transform:translateX(70px) scale(1.12)}}
     @keyframes shake{25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
-    @media(max-width:650px){header{flex-direction:column}.fighters{gap:12px}.avatar-frame,.enemy{width:38vw}.question{margin:18px 0}}
+    @media (max-width: 650px) {
+
+    header {
+        flex-direction: column;
+    }
+
+    .fighters {
+        gap: 12px;
+    }
+
+    .avatar-frame,
+    .enemy {
+        width: min(42vw, 220px);
+    }
+
+    .question {
+        margin: 18px 0;
+    }
+}
   </style>
 </head>
 <body>
