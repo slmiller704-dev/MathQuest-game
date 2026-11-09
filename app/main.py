@@ -193,7 +193,7 @@ CHARACTERS = {
 
 
 class StartRequest(BaseModel):
-    grade: int = Field(ge=4, le=12)
+    grade: int = Field(ge=3, le=12)
     archetype: str
     variant: str = Field(pattern="^(boy|girl)$")
     display_name: str = Field(default="MathQuest Student", min_length=2, max_length=80)
