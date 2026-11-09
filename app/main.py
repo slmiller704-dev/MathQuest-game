@@ -321,9 +321,7 @@ def generate_problem(
     preferred_skill: str | None = None,
     easier: bool = False,
 ) -> tuple[str, float, str, str]:
-
-    # Arcane Equation creates an easier problem that remains appropriate
-    # for the student's grade.
+    # Easier review problem used by the Warlock ability.
     if easier:
         if grade == 3:
             left = random.randint(2, 5)
@@ -348,17 +346,16 @@ def generate_problem(
 
     available = allowed_skills_for_grade(grade)
 
-    skill = (
-        preferred_skill
-        if preferred_skill in available
-        else random.choice(available)
-    )
+    if preferred_skill in available:
+        skill = preferred_skill
+    else:
+        skill = random.choice(available)
 
     # ------------------------------------------------------------------
-    # Grade 3-specific problems
+    # Grade 3
     # ------------------------------------------------------------------
 
-   if grade == 3:
+    if grade == 3:
         if skill == "multiplication":
             left = random.randint(2, 10)
             right = random.randint(2, 10)
@@ -441,7 +438,8 @@ def generate_problem(
                 f"{height} units long. What is its perimeter?",
                 float(2 * (width + height)),
                 skill,
-                "Add all four sides, or double the sum of length and width.",
+                "Add all four sides, or double the sum of "
+                "length and width.",
             )
 
         if skill == "two_step":
@@ -470,36 +468,38 @@ def generate_problem(
 
             first = start
             second = start + step
-            third = start + step * 2
-            fourth = start + step * 3
+            third = start + (step * 2)
+            fourth = start + (step * 3)
+            expected = start + (step * 4)
 
             return (
                 f"What number comes next? "
                 f"{first}, {second}, {third}, {fourth}, ?",
-                float(start + step * 4),
+                float(expected),
                 skill,
                 f"Each number increases by {step}.",
             )
 
-        # Grade 3 geometry
-        sides = random.choice([3, 4, 5, 6])
+        if skill == "geometry":
+            sides = random.choice([3, 4, 5, 6])
 
-        shape_names = {
-            3: "triangle",
-            4: "quadrilateral",
-            5: "pentagon",
-            6: "hexagon",
-        }
+            shape_names = {
+                3: "triangle",
+                4: "quadrilateral",
+                5: "pentagon",
+                6: "hexagon",
+            }
 
-        return (
-            f"How many sides does a {shape_names[sides]} have?",
-            float(sides),
-            "geometry",
-            "Count the straight sides of the shape.",
-        )
+            return (
+                f"How many sides does a "
+                f"{shape_names[sides]} have?",
+                float(sides),
+                skill,
+                "Count the straight sides of the shape.",
+            )
 
     # ------------------------------------------------------------------
-    # Grades 4–5
+    # Grades 4-5
     # ------------------------------------------------------------------
 
     if skill == "multiplication":
@@ -522,7 +522,8 @@ def generate_problem(
             f"{dividend} ÷ {divisor} = ?",
             float(answer),
             skill,
-            "Find the number that multiplied by the divisor equals the dividend.",
+            "Find the number that multiplied by the divisor "
+            "equals the dividend.",
         )
 
     if skill == "fractions":
@@ -537,13 +538,14 @@ def generate_problem(
         )
 
     # ------------------------------------------------------------------
-    # Grades 6–8
+    # Grades 6-8
     # ------------------------------------------------------------------
 
     if skill == "equations":
         answer = random.randint(2, 14)
         coefficient = random.randint(2, 8)
         constant = random.randint(1, 18)
+
         result = coefficient * answer + constant
 
         return (
@@ -554,8 +556,13 @@ def generate_problem(
         )
 
     if skill == "percent":
-        percent = random.choice([10, 20, 25, 50, 75])
-        base_number = random.choice([20, 40, 60, 80, 100, 120])
+        percent = random.choice(
+            [10, 20, 25, 50, 75]
+        )
+
+        base_number = random.choice(
+            [20, 40, 60, 80, 100, 120]
+        )
 
         return (
             f"What is {percent}% of {base_number}?",
@@ -576,38 +583,59 @@ def generate_problem(
         )
 
     # ------------------------------------------------------------------
-    # Grades 9–12
+    # Grades 9-12
     # ------------------------------------------------------------------
 
     if skill == "algebra":
         value = random.randint(-6, 8)
-        result = value * value + 3 * value + 2
+
+        result = (
+            value * value
+            + 3 * value
+            + 2
+        )
 
         return (
             f"Evaluate x² + 3x + 2 when x = {value}",
             float(result),
             skill,
-            "Substitute the value for x; use parentheses for a negative value.",
+            "Substitute the value for x; "
+            "use parentheses for a negative value.",
         )
 
     if skill == "functions":
         value = random.randint(-5, 8)
 
+        expected = 2 * value - 5
+
         return (
             f"If f(x) = 2x − 5, find f({value}).",
-            float(2 * value - 5),
+            float(expected),
             skill,
             "Replace x with the given input value.",
         )
 
-    width = random.randint(3, 15)
-    height = random.randint(3, 15)
+    if skill == "geometry":
+        width = random.randint(3, 15)
+        height = random.randint(3, 15)
+
+        return (
+            f"A rectangle is {width} units by "
+            f"{height} units. What is its area?",
+            float(width * height),
+            skill,
+            "Area equals length multiplied by width.",
+        )
+
+    # Defensive fallback. Normally this should never be reached.
+    left = random.randint(2, 9)
+    right = random.randint(2, 9)
 
     return (
-        f"A rectangle is {width} units by {height} units. What is its area?",
-        float(width * height),
-        "geometry",
-        "Area equals length multiplied by width.",
+        f"{left} × {right} = ?",
+        float(left * right),
+        "multiplication",
+        "Use a multiplication fact you already know.",
     )
 
 
