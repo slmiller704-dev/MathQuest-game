@@ -294,8 +294,24 @@ def generate_problem(
     preferred_skill: str | None = None,
     easier: bool = False,
 ) -> tuple[str, float, str, str]:
+
+    # Arcane Equation creates an easier problem that remains appropriate
+    # for the student's grade.
     if easier:
-        left, right = random.randint(2, 9), random.randint(2, 9)
+        if grade == 3:
+            left = random.randint(2, 5)
+            right = random.randint(2, 5)
+
+            return (
+                f"{left} × {right} = ?",
+                float(left * right),
+                "multiplication",
+                "Think of equal groups or repeated addition.",
+            )
+
+        left = random.randint(2, 9)
+        right = random.randint(2, 9)
+
         return (
             f"{left} × {right} = ?",
             float(left * right),
@@ -304,10 +320,159 @@ def generate_problem(
         )
 
     available = allowed_skills_for_grade(grade)
-    skill = preferred_skill if preferred_skill in available else random.choice(available)
+
+    skill = (
+        preferred_skill
+        if preferred_skill in available
+        else random.choice(available)
+    )
+
+    # ------------------------------------------------------------------
+    # Grade 3-specific problems
+    # ------------------------------------------------------------------
+
+    if grade == 3:
+        if skill == "multiplication":
+            left = random.randint(2, 10)
+            right = random.randint(2, 10)
+
+            return (
+                f"{left} × {right} = ?",
+                float(left * right),
+                skill,
+                f"Think of {left} groups with {right} in each group.",
+            )
+
+        if skill == "division":
+            divisor = random.randint(2, 10)
+            quotient = random.randint(2, 10)
+            dividend = divisor * quotient
+
+            return (
+                f"{dividend} ÷ {divisor} = ?",
+                float(quotient),
+                skill,
+                f"How many groups of {divisor} are in {dividend}?",
+            )
+
+        if skill == "place_value":
+            hundreds = random.randint(1, 8)
+            tens = random.randint(1, 9)
+            ones = random.randint(1, 9)
+
+            number = hundreds * 100 + tens * 10 + ones
+
+            return (
+                f"What is the value of the digit {tens} in {number}?",
+                float(tens * 10),
+                skill,
+                "The middle digit is in the tens place.",
+            )
+
+        if skill == "fractions":
+            denominator = random.choice([2, 3, 4, 6, 8])
+            numerator = random.randint(1, denominator - 1)
+
+            return (
+                f"A shape has {denominator} equal parts. "
+                f"{numerator} parts are shaded. "
+                f"What is the numerator?",
+                float(numerator),
+                skill,
+                "The numerator tells how many equal parts are selected.",
+            )
+
+        if skill == "measurement":
+            first_length = random.randint(5, 25)
+            second_length = random.randint(2, first_length)
+            total_length = first_length + second_length
+
+            return (
+                f"A ribbon is {first_length} centimeters long. "
+                f"Another ribbon is {second_length} centimeters long. "
+                f"What is their total length?",
+                float(total_length),
+                skill,
+                "Add the two lengths and keep the unit centimeters.",
+            )
+
+        if skill == "area_perimeter":
+            width = random.randint(2, 10)
+            height = random.randint(2, 10)
+
+            if random.choice([True, False]):
+                return (
+                    f"A rectangle is {width} units wide and "
+                    f"{height} units long. What is its area?",
+                    float(width * height),
+                    skill,
+                    "Area equals length multiplied by width.",
+                )
+
+            return (
+                f"A rectangle is {width} units wide and "
+                f"{height} units long. What is its perimeter?",
+                float(2 * (width + height)),
+                skill,
+                "Add all four sides, or double the sum of length and width.",
+            )
+
+        if skill == "two_step":
+            starting = random.randint(20, 60)
+            added = random.randint(5, 20)
+            removed = random.randint(2, min(added + 5, 20))
+            expected = starting + added - removed
+
+            return (
+                f"A player had {starting} coins, earned {added} more, "
+                f"and spent {removed}. How many coins remain?",
+                float(expected),
+                skill,
+                "First add the earned coins, then subtract the spent coins.",
+            )
+
+        if skill == "patterns":
+            start = random.randint(1, 10)
+            step = random.randint(2, 10)
+
+            first = start
+            second = start + step
+            third = start + step * 2
+            fourth = start + step * 3
+
+            return (
+                f"What number comes next? "
+                f"{first}, {second}, {third}, {fourth}, ?",
+                float(start + step * 4),
+                skill,
+                f"Each number increases by {step}.",
+            )
+
+        # Grade 3 geometry
+        sides = random.choice([3, 4, 5, 6])
+
+        shape_names = {
+            3: "triangle",
+            4: "quadrilateral",
+            5: "pentagon",
+            6: "hexagon",
+        }
+
+        return (
+            f"How many sides does a {shape_names[sides]} have?",
+            float(sides),
+            "geometry",
+            "Count the straight sides of the shape.",
+        )
+
+    # ------------------------------------------------------------------
+    # Grades 4–5
+    # ------------------------------------------------------------------
 
     if skill == "multiplication":
-        left, right = random.randint(2, 12), random.randint(2, 12)
+        left = random.randint(2, 12)
+        right = random.randint(2, 12)
+
         return (
             f"{left} × {right} = ?",
             float(left * right),
@@ -316,8 +481,10 @@ def generate_problem(
         )
 
     if skill == "division":
-        divisor, answer = random.randint(2, 12), random.randint(2, 12)
+        divisor = random.randint(2, 12)
+        answer = random.randint(2, 12)
         dividend = divisor * answer
+
         return (
             f"{dividend} ÷ {divisor} = ?",
             float(answer),
@@ -328,6 +495,7 @@ def generate_problem(
     if skill == "fractions":
         denominator = random.choice([2, 4, 5, 10])
         numerator = random.randint(1, denominator - 1)
+
         return (
             f"Write {numerator}/{denominator} as a decimal.",
             float(numerator / denominator),
@@ -335,10 +503,16 @@ def generate_problem(
             f"Divide {numerator} by {denominator}.",
         )
 
+    # ------------------------------------------------------------------
+    # Grades 6–8
+    # ------------------------------------------------------------------
+
     if skill == "equations":
         answer = random.randint(2, 14)
-        coefficient, constant = random.randint(2, 8), random.randint(1, 18)
+        coefficient = random.randint(2, 8)
+        constant = random.randint(1, 18)
         result = coefficient * answer + constant
+
         return (
             f"Solve: {coefficient}x + {constant} = {result}",
             float(answer),
@@ -349,6 +523,7 @@ def generate_problem(
     if skill == "percent":
         percent = random.choice([10, 20, 25, 50, 75])
         base_number = random.choice([20, 40, 60, 80, 100, 120])
+
         return (
             f"What is {percent}% of {base_number}?",
             float(percent * base_number / 100),
@@ -357,7 +532,9 @@ def generate_problem(
         )
 
     if skill == "integers":
-        left, right = random.randint(-15, 15), random.randint(-15, 15)
+        left = random.randint(-15, 15)
+        right = random.randint(-15, 15)
+
         return (
             f"{left} + ({right}) = ?",
             float(left + right),
@@ -365,9 +542,14 @@ def generate_problem(
             "Use a number line and pay attention to the signs.",
         )
 
+    # ------------------------------------------------------------------
+    # Grades 9–12
+    # ------------------------------------------------------------------
+
     if skill == "algebra":
         value = random.randint(-6, 8)
         result = value * value + 3 * value + 2
+
         return (
             f"Evaluate x² + 3x + 2 when x = {value}",
             float(result),
@@ -377,6 +559,7 @@ def generate_problem(
 
     if skill == "functions":
         value = random.randint(-5, 8)
+
         return (
             f"If f(x) = 2x − 5, find f({value}).",
             float(2 * value - 5),
@@ -384,7 +567,9 @@ def generate_problem(
             "Replace x with the given input value.",
         )
 
-    width, height = random.randint(3, 15), random.randint(3, 15)
+    width = random.randint(3, 15)
+    height = random.randint(3, 15)
+
     return (
         f"A rectangle is {width} units by {height} units. What is its area?",
         float(width * height),
