@@ -21,7 +21,26 @@ function updateCharacterPreview({ grade, variant, archetype }) {
     img.alt = `${variant} ${archetype}, grade ${grade} MathQuest character`;
     requestAnimationFrame(() => img.classList.remove('is-switching'));
   };
-  next.onerror = () => img.classList.remove('is-switching');
+  next.onerror = () => {
+    console.warn(
+        "Character image not found:",
+        characterImagePath(
+            grade,
+            variant,
+            archetype
+        )
+    );
+
+    img.alt =
+        `${variant} ${archetype} artwork ` +
+        `has not been added yet`;
+
+    img.removeAttribute("src");
+
+    img.classList.remove(
+        "is-switching"
+    );
+};
   next.src = characterImagePath(grade, variant, archetype);
 }
 
