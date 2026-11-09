@@ -4,124 +4,377 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>MathQuest Live</title>
-  <style>
-    :root{--gold:#ffd166;--cyan:#56d8ff;--panel:#102541;--bg:#061321;--muted:#9fb4c9;--danger:#ff7f8a}
-    *{box-sizing:border-box}
-    body{margin:0;background:radial-gradient(circle at top,#173c69,var(--bg) 55%);color:#fff;font:16px system-ui,"Segoe UI",sans-serif}
-    header,main{padding:20px 5vw}
-    header{background:#061321e8;display:flex;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:5}
-    h1{color:var(--gold);margin:0}
-    .setup,.arena,.lesson,.card{background:#102541e8;border:1px solid #355578;border-radius:18px;padding:18px}
-    .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
-    label{display:grid;gap:5px}
-    select,input,button{padding:10px;border-radius:9px;font:inherit}
-    select,input{background:#07182b;color:white;border:1px solid #5d7690}
-    button{border:0;background:var(--gold);font-weight:800;cursor:pointer}
-    button:disabled{cursor:not-allowed;opacity:.55}
-    .ghost{background:#244464;color:#fff}
-    .fighters{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:25px 0}
-    .fighter{text-align:center}
-    .avatar-frame {
-    margin: 0 auto;
-    width: clamp(190px, 26vw, 300px);
-    aspect-ratio: 1;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-    overflow: hidden;
-
-    border: 4px solid #ffffff55;
-
-    background: radial-gradient(
-        circle at center,
-        #18395c,
-        #07182b 75%
-    );
-
-    box-shadow: 0 0 28px #56d8ff55;
-
-    animation: float 2.4s ease-in-out infinite;
-}
-    .character-preview {
-    display: block;
-    width: 100%;
-    height: 100%;
-
-    /* Keep the entire character visible */
-    object-fit: contain;
-    object-position: center center;
-
-    /* Small breathing room around the portrait */
-    padding: 10px;
-
-    opacity: 1;
-    transform: scale(0.92);
-
-    transition:
-        opacity 0.22s ease,
-        transform 0.22s ease;
-}
-
-.character-preview.is-switching {
-    opacity: 0;
-    transform: scale(0.86);
-}
-
-@media (max-width: 650px) {
-    .avatar-frame,
-    .enemy {
-        width: min(42vw, 190px);
+ <style>
+    :root {
+        --gold: #ffd166;
+        --cyan: #56d8ff;
+        --panel: #102541;
+        --bg: #061321;
+        --muted: #9fb4c9;
+        --danger: #ff7f8a;
     }
 
-    .character-preview {
-        padding: 8px;
-        transform: scale(0.90);
+    * {
+        box-sizing: border-box;
     }
 
-    .character-preview.is-switching {
-        transform: scale(0.84);
+    body {
+        margin: 0;
+        background: radial-gradient(
+            circle at top,
+            #173c69,
+            var(--bg) 55%
+        );
+        color: #fff;
+        font: 16px system-ui, "Segoe UI", sans-serif;
     }
-}
-    .enemy{margin:auto;width:min(260px,38vw);aspect-ratio:1;border-radius:50%;border:5px solid #ffffff55;background:radial-gradient(circle,#b34dff,#361650 70%);display:grid;place-items:center;font-size:5rem;animation:pulse 1.5s infinite}
-    .enemy:after{content:'∑'}
-    .attack{animation:strike .45s ease}
-    .hurt{animation:shake .38s ease}
-    .bar{height:14px;background:#31485f;border-radius:10px;overflow:hidden}
-    .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--gold));transition:.35s}
-    .question{text-align:center;font-size:clamp(1.7rem,4vw,3.2rem);margin:25px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
-    .mastery{height:10px;background:#2b4158;border-radius:8px;overflow:hidden}
-    .mastery i{display:block;height:100%;background:#66e08c}
-    .log{min-height:26px;color:var(--gold)}
-    .preview-status{min-height:20px;color:var(--muted);font-size:.9rem;margin:8px 0 0}
-    .error{color:var(--danger)}
-    @keyframes float{50%{transform:translateY(-12px)}}
-    @keyframes pulse{50%{box-shadow:0 0 50px #b34dff}}
-    @keyframes strike{50%{transform:translateX(70px) scale(1.12)}}
-    @keyframes shake{25%{transform:translateX(-12px)}75%{transform:translateX(12px)}}
-    @media (max-width: 650px) {
+
+    header,
+    main {
+        padding: 20px 5vw;
+    }
 
     header {
-        flex-direction: column;
+        background: #061321e8;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 5;
     }
+
+    h1 {
+        color: var(--gold);
+        margin: 0;
+    }
+
+    .setup,
+    .arena,
+    .lesson,
+    .card {
+        background: #102541e8;
+        border: 1px solid #355578;
+        border-radius: 18px;
+        padding: 18px;
+    }
+
+    .controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: end;
+    }
+
+    label {
+        display: grid;
+        gap: 5px;
+    }
+
+    select,
+    input,
+    button {
+        padding: 10px;
+        border-radius: 9px;
+        font: inherit;
+    }
+
+    select,
+    input {
+        background: #07182b;
+        color: white;
+        border: 1px solid #5d7690;
+    }
+
+    button {
+        border: 0;
+        background: var(--gold);
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    button:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+    }
+
+    .ghost {
+        background: #244464;
+        color: #fff;
+    }
+
+    /* -------------------------------------------------------
+       BATTLE CHARACTERS
+       ------------------------------------------------------- */
 
     .fighters {
-        gap: 12px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin: 25px 0;
+        align-items: start;
     }
 
-    .avatar-frame,
-    .enemy {
-        width: min(42vw, 220px);
+    .fighter {
+        text-align: center;
+        min-width: 0;
     }
+
+    /*
+       Character circle.
+
+       Keep the frame large enough to clearly see the character,
+       while allowing the actual artwork to be slightly smaller
+       inside the circle.
+    */
+    .avatar-frame {
+        margin: 0 auto;
+
+        width: clamp(190px, 26vw, 300px);
+        aspect-ratio: 1;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 50%;
+        overflow: hidden;
+
+        border: 4px solid #ffffff55;
+
+        background: radial-gradient(
+            circle at center,
+            #18395c,
+            #07182b 75%
+        );
+
+        box-shadow: 0 0 28px #56d8ff55;
+
+        animation: float 2.4s ease-in-out infinite;
+    }
+
+    /*
+       Individual character PNG.
+
+       CONTAIN is important here because it keeps the complete
+       portrait visible instead of zooming/cropping it.
+    */
+    .character-preview {
+        display: block;
+
+        width: 100%;
+        height: 100%;
+
+        object-fit: contain;
+        object-position: center center;
+
+        padding: 10px;
+
+        opacity: 1;
+
+        /*
+           Slightly reduce the artwork so hats, hair, armor,
+           wings, etc. stay inside the circular frame.
+        */
+        transform: scale(0.92);
+
+        transition:
+            opacity 0.22s ease,
+            transform 0.22s ease;
+    }
+
+    /*
+       Used while switching:
+       Knight -> Wizard
+       Boy -> Girl
+       Younger -> High School
+    */
+    .character-preview.is-switching {
+        opacity: 0;
+        transform: scale(0.86);
+    }
+
+    /* -------------------------------------------------------
+       ENEMY
+       ------------------------------------------------------- */
+
+    .enemy {
+        margin: auto;
+
+        width: min(260px, 38vw);
+        aspect-ratio: 1;
+
+        border-radius: 50%;
+        border: 5px solid #ffffff55;
+
+        background: radial-gradient(
+            circle,
+            #b34dff,
+            #361650 70%
+        );
+
+        display: grid;
+        place-items: center;
+
+        font-size: 5rem;
+
+        animation: pulse 1.5s infinite;
+    }
+
+    .enemy::after {
+        content: "∑";
+    }
+
+    /* -------------------------------------------------------
+       BATTLE ANIMATIONS
+       ------------------------------------------------------- */
+
+    .attack {
+        animation: strike 0.45s ease;
+    }
+
+    .hurt {
+        animation: shake 0.38s ease;
+    }
+
+    @keyframes float {
+        50% {
+            transform: translateY(-12px);
+        }
+    }
+
+    @keyframes pulse {
+        50% {
+            box-shadow: 0 0 50px #b34dff;
+        }
+    }
+
+    @keyframes strike {
+        50% {
+            transform: translateX(70px) scale(1.12);
+        }
+    }
+
+    @keyframes shake {
+        25% {
+            transform: translateX(-12px);
+        }
+
+        75% {
+            transform: translateX(12px);
+        }
+    }
+
+    /* -------------------------------------------------------
+       HEALTH BARS
+       ------------------------------------------------------- */
+
+    .bar {
+        height: 14px;
+        background: #31485f;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .bar i {
+        display: block;
+        height: 100%;
+
+        background: linear-gradient(
+            90deg,
+            var(--cyan),
+            var(--gold)
+        );
+
+        transition: 0.35s;
+    }
+
+    /* -------------------------------------------------------
+       QUESTION / LEARNING AREA
+       ------------------------------------------------------- */
 
     .question {
-        margin: 18px 0;
+        text-align: center;
+        font-size: clamp(1.7rem, 4vw, 3.2rem);
+        margin: 25px;
     }
-}
-  </style>
+
+    .grid {
+        display: grid;
+
+        grid-template-columns:
+            repeat(
+                auto-fit,
+                minmax(160px, 1fr)
+            );
+
+        gap: 10px;
+    }
+
+    .mastery {
+        height: 10px;
+        background: #2b4158;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .mastery i {
+        display: block;
+        height: 100%;
+        background: #66e08c;
+    }
+
+    .log {
+        min-height: 26px;
+        color: var(--gold);
+    }
+
+    .preview-status {
+        min-height: 20px;
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin: 8px 0 0;
+    }
+
+    .error {
+        color: var(--danger);
+    }
+
+    /* -------------------------------------------------------
+       PHONE / SMALL SCREEN
+       ------------------------------------------------------- */
+
+    @media (max-width: 650px) {
+        header {
+            flex-direction: column;
+        }
+
+        .fighters {
+            gap: 12px;
+        }
+
+        .avatar-frame,
+        .enemy {
+            width: min(42vw, 190px);
+        }
+
+        /*
+           Keep the complete character visible on phones too.
+        */
+        .character-preview {
+            padding: 8px;
+            transform: scale(0.90);
+        }
+
+        .character-preview.is-switching {
+            transform: scale(0.84);
+        }
+
+        .question {
+            margin: 18px 0;
+        }
+    }
+</style>
 </head>
 <body>
 <header>
