@@ -21,42 +21,29 @@
     .ghost{background:#244464;color:#fff}
     .fighters{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:25px 0}
     .fighter{text-align:center}
-    .avatar-frame {
-    margin: 0 auto;
-    width: clamp(200px, 28vw, 320px);
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 4px solid #ffffff55;
-    background: radial-gradient(
-        circle at center,
-        #18395c,
-        #07182b 75%
-    );
-    box-shadow: 0 0 28px #56d8ff55;
-    animation: float 2.4s ease-in-out infinite;
-}
-
-.character-preview {
+    .character-preview {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    object-position: center 18%;
-    padding: 0;
+
+    /* Keep the entire character visible */
+    object-fit: contain;
+    object-position: center center;
+
+    /* Small breathing room around the portrait */
+    padding: 10px;
+
     opacity: 1;
-    transform: scale(1.04);
+    transform: scale(0.92);
+
     transition:
-        opacity .22s ease,
-        transform .22s ease;
+        opacity 0.22s ease,
+        transform 0.22s ease;
 }
 
 .character-preview.is-switching {
     opacity: 0;
-    transform: scale(.94);
+    transform: scale(0.86);
 }
 
 @media (max-width: 650px) {
