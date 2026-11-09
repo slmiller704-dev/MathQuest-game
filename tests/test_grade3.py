@@ -236,3 +236,185 @@ def test_grade3_arcane_equation_stays_grade_appropriate():
     assert ability_data["battle"]["skill"] == "multiplication"
     assert "×" in ability_data["battle"]["prompt"]
     assert ability_data["battle"]["ability_used"] is True
+
+CHARACTERS = [
+    "Knight",
+    "Wizard",
+    "Engineer",
+    "Ranger",
+    "Ninja",
+    "Paladin",
+    "Fairy",
+    "Jester",
+    "Warlock",
+]
+
+
+def test_grade3_start_creates_profile(tmp_path):
+    with build_client(tmp_path) as client:
+        response = client.post(
+            "/api/start",
+            json={
+                "grade": 3,
+                "archetype": "Knight",
+                "variant": "boy",
+                "display_name": "Grade 3 Student",
+            },
+        )
+
+        assert response.status_code == 200
+
+        payload = response.json()
+
+        assert payload["event"] == "battle_start"
+        assert payload["character"]["archetype"] == "Knight"
+        assert payload["character"]["variant"] == "boy"
+        assert payload["battle"]["status"] == "active"
+        assert payload["battle"]["skill"] in GRADE_3_SKILLS
+        assert payload["battle"]["prompt"]
+
+        profile_response = client.get("/api/profile")
+
+    assert profile_response.status_code == 200
+
+    profile = profile_response.json()["profile"]
+
+    assert profile["grade"] == 3
+    assert profile["archetype"] == "Knight"
+    assert profile["variant"] == "boy"
+
+
+def test_grade2_is_rejected(tmp_path):
+    with build_client(tmp_path) as client:
+        response = client.post(
+            "/api/start",
+            json={
+                "grade": 2,
+                "archetype": "Knight",
+                "variant": "boy",
+                "display_name": "Grade 2 Student",
+            },
+        )
+
+    assert response.status_code == 422
+
+
+def test_all_grade3_character_variants(tmp_path):
+    for archetype in CHARACTERS:
+        for variant in ("boy", "girl"):
+            with build_client(tmp_path) as client:
+                response = client.post(
+                    "/api/start",
+                    json={
+                        "grade": 3,
+                        "archetype": archetype,
+                        "variant": variant,
+                        "display_name": "Character Tester",
+                    },
+                )
+
+                assert response.status_code == 200
+
+                payload = response.json()
+
+                assert (
+                    payload["character"]["archetype"]
+                    == archetype
+                )
+
+                assert (
+                    payload["character"]["variant"]
+                    == variant
+                )
+
+                assert (
+                    payload["battle"]["skill"]
+                    in GRADE_3_SKILLS
+                )
+
+
+def test_grade3_correct_answer_updates_mastery(tmp_path):
+    with build_client(tmp_path) as client:
+        start_response = client.post(
+            "/api/start",
+            json={
+                "grade": 3,
+                "archetype": "Wizard",
+                "variant": "girl",
+                "display_name": "Battle Tester",
+            },
+        )
+
+        assert start_response.status_code == 200
+
+        start_payload = start_response.json()
+        session_id = start_payload["session_id"]
+
+        module = sys.modules["app.main"]
+
+        with module.SessionLocal() as database:
+            battle = database.get(
+                module.BattleSession,
+                session_id,
+            )
+
+            expected_answer = battle.expected_answer
+
+        answer_response = client.post(
+            "/api/answer",
+            json={
+                "session_id": session_id,
+                "answer": expected_answer,
+                "seconds": 3,
+            },
+        )
+
+    assert answer_response.status_code == 200
+
+    payload = answer_response.json()
+
+    assert payload["event"] in {"hit", "victory"}
+    assert payload["character"]["xp"] > 0
+    assert payload["character"]["coins"] >= 5
+    assert payload["mastery"]
+
+
+def test_grade3_wrong_answer_reduces_hp(tmp_path):
+    with build_client(tmp_path) as client:
+        start_response = client.post(
+            "/api/start",
+            json={
+                "grade": 3,
+                "archetype": "Knight",
+                "variant": "boy",
+                "display_name": "Battle Tester",
+            },
+        )
+
+        assert start_response.status_code == 200
+
+        start_payload = start_response.json()
+
+        starting_hp = start_payload["battle"]["hp"]
+
+        response = client.post(
+            "/api/answer",
+            json={
+                "session_id": start_payload["session_id"],
+                "answer": -999999,
+                "seconds": 5,
+            },
+        )
+
+    assert response.status_code == 200
+
+    payload = response.json()
+
+    assert payload["event"] == "miss"
+
+    assert (
+        payload["battle"]["hp"]
+        == starting_hp - 15
+    )
+
+    assert payload["mastery"]
