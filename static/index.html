@@ -192,13 +192,7 @@
       previewStatus.textContent=`${characterBand()==='younger'?'Grades 3–8':'Grades 9–12'} • ${variant.value==='boy'?'Boy':'Girl'} version`;
       requestAnimationFrame(()=>characterPreview.classList.remove('is-switching'));
     };
-    next.onerror=()=>{
-      if(requestId!==previewRequest)return;
-      characterPreview.src=fallbackPath();
-      characterPreview.alt='MathQuest roster fallback';
-      previewStatus.textContent='Individual artwork for this selection has not been added yet.';
-      characterPreview.classList.remove('is-switching');
-    };
+   
     next.src=path;
   }
 
