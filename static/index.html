@@ -1,4 +1,78 @@
-                        );
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <!-- Makes the interface scale correctly on phones and tablets. -->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <title>MathQuest Live</title>
+
+    <style>
+        /* =========================================================
+           THEME
+           ========================================================= */
+
+        :root {
+            --gold: #ffd166;
+            --cyan: #56d8ff;
+            --panel: #102541;
+            --bg: #061321;
+            --muted: #9fb4c9;
+            --danger: #ff7f8a;
+            --border: #355578;
+            --input-bg: #07182b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-width: 320px;
+        }
+
+        body {
+            margin: 0;
+            min-width: 320px;
+
+            background:
+                radial-gradient(
+                    circle at top,
+                    #173c69,
+                    var(--bg) 55%
+                );
+
+            color: #fff;
+
+            font:
+                16px system-ui,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        /* =========================================================
+           HEADER
+           ========================================================= */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 16px;
+
+            padding: 16px 5vw;
+
+            background: #061321f2;
+                                    );
 
                     draw(data);
 
