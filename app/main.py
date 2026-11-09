@@ -453,11 +453,10 @@ def generate_problem(
     return (
         f"A player had {starting} coins, earned {added} more, "
         f"and spent {removed}. How many coins remain?",
-        float(expected),
+        float(expcted),
         skill,
         "First add the earned coins, then subtract the spent coins.",
-    )
-            )
+           )
 
         if skill == "patterns":
             start = random.randint(1, 10)
