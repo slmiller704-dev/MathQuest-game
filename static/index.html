@@ -22,65 +22,42 @@
     .fighters{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin:25px 0}
     .fighter{text-align:center}
     .avatar-frame {
-    margin: 0 auto;
-
-    width: clamp(
-        150px,
-        22vw,
-        250px
-    );
-
-    aspect-ratio: 1;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-    overflow: hidden;
-
-    border: 4px solid #ffffff55;
-
-    background:
-        radial-gradient(
-            circle at center,
-            #18395c,
-            #07182b 75%
-        );
-
-    box-shadow:
-        0 0 24px #56d8ff45;
-
-    animation:
-        float 2.4s ease-in-out infinite;
+  margin: 0 auto;
+  width: clamp(150px, 22vw, 250px);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #ffffff55;
+  background: radial-gradient(
+    circle at center,
+    #18395c,
+    #07182b 75%
+  );
+  box-shadow: 0 0 24px #56d8ff45;
+  animation: float 2.4s ease-in-out infinite;
 }
-    .character-preview {
-    display: block;
 
-    width: 100%;
-    height: 100%;
-
-    /*
-      Show the entire character image
-      instead of cropping it.
-    */
-    object-fit: contain;
-    object-position: center bottom;
-
-    /*
-      Gives the character a little
-      breathing room inside the circle.
-    */
-    padding: 8px;
-
-    opacity: 1;
-    transform: scale(.94);
-
-    transition:
-        opacity .22s ease,
-        transform .22s ease;
+.character-preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  padding: 6px;
+  opacity: 1;
+  transform: scale(.96);
+  transition:
+    opacity .22s ease,
+    transform .22s ease;
 }
-    .character-preview.is-switching{opacity:0;transform:scale(.88)}
+
+.character-preview.is-switching {
+  opacity: 0;
+  transform: scale(.90);
+}
     .enemy{margin:auto;width:min(260px,38vw);aspect-ratio:1;border-radius:50%;border:5px solid #ffffff55;background:radial-gradient(circle,#b34dff,#361650 70%);display:grid;place-items:center;font-size:5rem;animation:pulse 1.5s infinite}
     .enemy:after{content:'∑'}
     .attack{animation:strike .45s ease}
@@ -197,7 +174,7 @@
       if(requestId!==previewRequest)return;
       characterPreview.src=path;
       characterPreview.alt=`${variant.value} ${char.value} for grade ${grade.value}`;
-      previewStatus.textContent=`${characterBand()==='younger'?'Grades 4–8':'Grades 9–12'} • ${variant.value==='boy'?'Boy':'Girl'} version`;
+      previewStatus.textContent=`${characterBand()==='younger'?'Grades 3–8':'Grades 9–12'} • ${variant.value==='boy'?'Boy':'Girl'} version`;
       requestAnimationFrame(()=>characterPreview.classList.remove('is-switching'));
     };
     next.onerror=()=>{
