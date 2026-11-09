@@ -358,7 +358,7 @@ def generate_problem(
     # Grade 3-specific problems
     # ------------------------------------------------------------------
 
-    if grade == 3:
+   if grade == 3:
         if skill == "multiplication":
             left = random.randint(2, 10)
             right = random.randint(2, 10)
