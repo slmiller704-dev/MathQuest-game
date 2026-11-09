@@ -442,7 +442,8 @@ def generate_problem(
                 float(2 * (width + height)),
                 skill,
                 "Add all four sides, or double the sum of length and width.",
-            )
+            (
+                )
 
     if grade == 3 and skill == "two_step":
     starting = random.randint(20, 60)
