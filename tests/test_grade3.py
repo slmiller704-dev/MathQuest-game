@@ -250,30 +250,29 @@ CHARACTERS = [
 ]
 
 
-def test_grade3_start_creates_profile(tmp_path):
-    with build_client(tmp_path) as client:
-        response = client.post(
-            "/api/start",
-            json={
-                "grade": 3,
-                "archetype": "Knight",
-                "variant": "boy",
-                "display_name": "Grade 3 Student",
-            },
-        )
+def test_grade3_start_creates_profile(client):
+    response = client.post(
+        "/api/start",
+        json={
+            "grade": 3,
+            "archetype": "Knight",
+            "variant": "boy",
+            "display_name": "Grade 3 Student",
+        },
+    )
 
-        assert response.status_code == 200
+    assert response.status_code == 200
 
-        payload = response.json()
+    payload = response.json()
 
-        assert payload["event"] == "battle_start"
-        assert payload["character"]["archetype"] == "Knight"
-        assert payload["character"]["variant"] == "boy"
-        assert payload["battle"]["status"] == "active"
-        assert payload["battle"]["skill"] in GRADE_3_SKILLS
-        assert payload["battle"]["prompt"]
+    assert payload["event"] == "battle_start"
+    assert payload["character"]["archetype"] == "Knight"
+    assert payload["character"]["variant"] == "boy"
+    assert payload["battle"]["status"] == "active"
+    assert payload["battle"]["skill"] in GRADE_3_SKILLS
+    assert payload["battle"]["prompt"]
 
-        profile_response = client.get("/api/profile")
+    profile_response = client.get("/api/profile")
 
     assert profile_response.status_code == 200
 
