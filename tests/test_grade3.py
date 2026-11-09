@@ -4,7 +4,7 @@ import sys
 
 import pytest
 from fastapi.testclient import TestClient
-
+from tests.conftest import build_client
 
 TEST_DATABASE = "test_grade3_mathquest.db"
 
