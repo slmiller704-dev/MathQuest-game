@@ -1,537 +1,74 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>MathQuest Live</title>
- <style>
-    :root {
-        --gold: #ffd166;
-        --cyan: #56d8ff;
-        --panel: #102541;
-        --bg: #061321;
-        --muted: #9fb4c9;
-        --danger: #ff7f8a;
-    }
+                        );
 
-    * {
-        box-sizing: border-box;
-    }
+                    draw(data);
 
-    body {
-        margin: 0;
-        background: radial-gradient(
-            circle at top,
-            #173c69,
-            var(--bg) 55%
-        );
-        color: #fff;
-        font: 16px system-ui, "Segoe UI", sans-serif;
-    }
+                    if (
+                        data.battle.status ===
+                        "active"
+                    ) {
+                        answer.focus();
+                    }
+                } catch (error) {
+                    log.textContent =
+                        error.message;
 
-    header,
-    main {
-        padding: 20px 5vw;
-    }
-
-    header {
-        background: #061321e8;
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        position: sticky;
-        top: 0;
-        z-index: 5;
-    }
-
-    h1 {
-        color: var(--gold);
-        margin: 0;
-    }
-
-    .setup,
-    .arena,
-    .lesson,
-    .card {
-        background: #102541e8;
-        border: 1px solid #355578;
-        border-radius: 18px;
-        padding: 18px;
-    }
-
-    .controls {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        align-items: end;
-    }
-
-    label {
-        display: grid;
-        gap: 5px;
-    }
-
-    select,
-    input,
-    button {
-        padding: 10px;
-        border-radius: 9px;
-        font: inherit;
-    }
-
-    select,
-    input {
-        background: #07182b;
-        color: white;
-        border: 1px solid #5d7690;
-    }
-
-    button {
-        border: 0;
-        background: var(--gold);
-        font-weight: 800;
-        cursor: pointer;
-    }
-
-    button:disabled {
-        cursor: not-allowed;
-        opacity: 0.55;
-    }
-
-    .ghost {
-        background: #244464;
-        color: #fff;
-    }
-
-    /* -------------------------------------------------------
-       BATTLE CHARACTERS
-       ------------------------------------------------------- */
-
-    .fighters {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-        margin: 25px 0;
-        align-items: start;
-    }
-
-    .fighter {
-        text-align: center;
-        min-width: 0;
-    }
-
-    /*
-       Character circle.
-
-       Keep the frame large enough to clearly see the character,
-       while allowing the actual artwork to be slightly smaller
-       inside the circle.
-    */
-    .avatar-frame {
-        margin: 0 auto;
-
-        width: clamp(190px, 26vw, 300px);
-        aspect-ratio: 1;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        border-radius: 50%;
-        overflow: hidden;
-
-        border: 4px solid #ffffff55;
-
-        background: radial-gradient(
-            circle at center,
-            #18395c,
-            #07182b 75%
+                    log.classList
+                        .add("error");
+                }
+            }
         );
 
-        box-shadow: 0 0 28px #56d8ff55;
-
-        animation: float 2.4s ease-in-out infinite;
-    }
-
-    /*
-       Individual character PNG.
-
-       CONTAIN is important here because it keeps the complete
-       portrait visible instead of zooming/cropping it.
-    */
-    .character-preview {
-        display: block;
-
-        width: 100%;
-        height: 100%;
-
-        object-fit: contain;
-        object-position: center center;
-
-        padding: 10px;
-
-        opacity: 1;
+        /* =========================================================
+           KEYBOARD SUPPORT
+           ========================================================= */
 
         /*
-           Slightly reduce the artwork so hats, hair, armor,
-           wings, etc. stay inside the circular frame.
-        */
-        transform: scale(0.92);
-
-        transition:
-            opacity 0.22s ease,
-            transform 0.22s ease;
-    }
-
-    /*
-       Used while switching:
-       Knight -> Wizard
-       Boy -> Girl
-       Younger -> High School
-    */
-    .character-preview.is-switching {
-        opacity: 0;
-        transform: scale(0.86);
-    }
-
-    /* -------------------------------------------------------
-       ENEMY
-       ------------------------------------------------------- */
-
-    .enemy {
-        margin: auto;
-
-        width: min(260px, 38vw);
-        aspect-ratio: 1;
-
-        border-radius: 50%;
-        border: 5px solid #ffffff55;
-
-        background: radial-gradient(
-            circle,
-            #b34dff,
-            #361650 70%
+         * Pressing Enter in the answer field triggers Attack.
+         */
+        answer.addEventListener(
+            "keydown",
+            event => {
+                if (
+                    event.key === "Enter"
+                ) {
+                    attack.click();
+                }
+            }
         );
 
-        display: grid;
-        place-items: center;
-
-        font-size: 5rem;
-
-        animation: pulse 1.5s infinite;
-    }
-
-    .enemy::after {
-        content: "∑";
-    }
-
-    /* -------------------------------------------------------
-       BATTLE ANIMATIONS
-       ------------------------------------------------------- */
-
-    .attack {
-        animation: strike 0.45s ease;
-    }
-
-    .hurt {
-        animation: shake 0.38s ease;
-    }
-
-    @keyframes float {
-        50% {
-            transform: translateY(-12px);
-        }
-    }
-
-    @keyframes pulse {
-        50% {
-            box-shadow: 0 0 50px #b34dff;
-        }
-    }
-
-    @keyframes strike {
-        50% {
-            transform: translateX(70px) scale(1.12);
-        }
-    }
-
-    @keyframes shake {
-        25% {
-            transform: translateX(-12px);
-        }
-
-        75% {
-            transform: translateX(12px);
-        }
-    }
-
-    /* -------------------------------------------------------
-       HEALTH BARS
-       ------------------------------------------------------- */
-
-    .bar {
-        height: 14px;
-        background: #31485f;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    .bar i {
-        display: block;
-        height: 100%;
-
-        background: linear-gradient(
-            90deg,
-            var(--cyan),
-            var(--gold)
-        );
-
-        transition: 0.35s;
-    }
-
-    /* -------------------------------------------------------
-       QUESTION / LEARNING AREA
-       ------------------------------------------------------- */
-
-    .question {
-        text-align: center;
-        font-size: clamp(1.7rem, 4vw, 3.2rem);
-        margin: 25px;
-    }
-
-    .grid {
-        display: grid;
-
-        grid-template-columns:
-            repeat(
-                auto-fit,
-                minmax(160px, 1fr)
-            );
-
-        gap: 10px;
-    }
-
-    .mastery {
-        height: 10px;
-        background: #2b4158;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .mastery i {
-        display: block;
-        height: 100%;
-        background: #66e08c;
-    }
-
-    .log {
-        min-height: 26px;
-        color: var(--gold);
-    }
-
-    .preview-status {
-        min-height: 20px;
-        color: var(--muted);
-        font-size: 0.9rem;
-        margin: 8px 0 0;
-    }
-
-    .error {
-        color: var(--danger);
-    }
-
-    /* -------------------------------------------------------
-       PHONE / SMALL SCREEN
-       ------------------------------------------------------- */
-
-    @media (max-width: 650px) {
-        header {
-            flex-direction: column;
-        }
-
-        .fighters {
-            gap: 12px;
-        }
-
-        .avatar-frame,
-        .enemy {
-            width: min(42vw, 190px);
-        }
+        /* =========================================================
+           CHARACTER SELECTION LISTENERS
+           ========================================================= */
 
         /*
-           Keep the complete character visible on phones too.
-        */
-        .character-preview {
-            padding: 8px;
-            transform: scale(0.90);
-        }
+         * Changing any of these values immediately reloads the
+         * corresponding individual character portrait.
+         */
+        grade.addEventListener(
+            "change",
+            updateCharacterPreview
+        );
 
-        .character-preview.is-switching {
-            transform: scale(0.84);
-        }
+        char.addEventListener(
+            "change",
+            updateCharacterPreview
+        );
 
-        .question {
-            margin: 18px 0;
-        }
-    }
-</style>
-</head>
-<body>
-<header>
-  <div><h1>MathQuest Live</h1><small>Adaptive learning battles</small></div>
-  <div>Level <b id="lvl">1</b> • XP <b id="xp">0</b> • Coins <b id="coins">0</b></div>
-</header>
-<main>
-  <section class="setup">
-    <div class="controls">
-      <label>Player name<input id="displayName" value="Samuel" maxlength="80"></label>
-      <label>Grade<select id="grade"><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option selected>9</option><option>10</option><option>11</option><option>12</option></select></label>
-      <label>Character<select id="char"></select></label>
-      <label>Version<select id="variant"><option value="boy">Boy</option><option value="girl">Girl</option></select></label>
-      <button id="start" type="button">Start Battle</button>
-    </div>
-  </section>
+        variant.addEventListener(
+            "change",
+            updateCharacterPreview
+        );
 
-  <section class="arena" style="margin-top:16px">
-    <div class="fighters">
-      <div class="fighter">
-        <div id="hero" class="avatar-frame">
-          <img id="characterPreview" class="character-preview" alt="Selected MathQuest character">
-        </div>
-        <h3 id="heroName">Choose a hero</h3>
-        <div class="bar"><i id="hp" style="width:100%"></i></div>
-        <small id="hpText">HP</small>
-        <p id="previewStatus" class="preview-status" aria-live="polite"></p>
-      </div>
-      <div class="fighter">
-        <div id="enemy" class="enemy"></div>
-        <h3>Number Guardian</h3>
-        <div class="bar"><i id="enemyHp" style="width:100%"></i></div>
-        <small id="enemyText">100 HP</small>
-      </div>
-    </div>
-    <div id="question" class="question">Start a battle to begin learning.</div>
-    <div class="controls" style="justify-content:center">
-      <input id="answer" inputmode="decimal" placeholder="Enter answer">
-      <button id="attack" type="button">Attack</button>
-      <button id="ability" type="button" class="ghost">Use Ability</button>
-    </div>
-    <p id="log" class="log" aria-live="polite"></p>
-  </section>
+        /* =========================================================
+           INITIAL PAGE LOAD
+           ========================================================= */
 
-  <section class="lesson" style="margin-top:16px">
-    <h2>Learning Mastery</h2>
-    <p>The next question favors skills that need more practice.</p>
-    <div id="mastery" class="grid"></div>
-  </section>
-</main>
-<script>
-  const CLASSES=['Knight','Wizard','Engineer','Ranger','Ninja','Paladin','Fairy','Jester','Warlock'];
-  const $=id=>document.getElementById(id);
-  const grade=$('grade'),char=$('char'),variant=$('variant'),displayName=$('displayName');
-  const hero=$('hero'),characterPreview=$('characterPreview'),heroName=$('heroName'),previewStatus=$('previewStatus');
-  const lvl=$('lvl'),xp=$('xp'),coins=$('coins'),question=$('question'),hp=$('hp'),enemyHp=$('enemyHp');
-  const hpText=$('hpText'),enemyText=$('enemyText'),log=$('log'),mastery=$('mastery'),answer=$('answer');
-  const start=$('start'),attack=$('attack'),ability=$('ability'),enemy=$('enemy');
-  char.innerHTML=CLASSES.map(name=>`<option value="${name}">${name}</option>`).join('');
+        /*
+         * Load the initial character portrait as soon as the page
+         * is ready.
+         */
+        updateCharacterPreview();
+    </script>
 
-  let game=null;
-  let problemStarted=Date.now();
-  let previewRequest=0;
-
-  function characterBand(){return Number(grade.value)<=8?'younger':'highschool'}
-  function individualPath(){return `/static/characters/${characterBand()}/${variant.value}/${char.value.toLowerCase()}.png`}
-  function fallbackPath(){return '/static/assets/characters.png'}
-
-  function updateCharacterPreview(){
-    const requestId=++previewRequest;
-    const path=individualPath();
-    characterPreview.classList.add('is-switching');
-    previewStatus.textContent='Loading character preview…';
-    heroName.textContent=`${variant.value==='boy'?'Boy':'Girl'} ${char.value}`;
-    const next=new Image();
-    next.onload=()=>{
-      if(requestId!==previewRequest)return;
-      characterPreview.src=path;
-      characterPreview.alt=`${variant.value} ${char.value} for grade ${grade.value}`;
-      previewStatus.textContent=`${characterBand()==='younger'?'Grades 3–8':'Grades 9–12'} • ${variant.value==='boy'?'Boy':'Girl'} version`;
-      requestAnimationFrame(()=>characterPreview.classList.remove('is-switching'));
-    };
-   
-    next.src=path;
-  }
-
-  async function api(path,body){
-    const response=await fetch(path,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    const text=await response.text();
-    let data;
-    try{data=text?JSON.parse(text):{}}catch{throw new Error(text||`Request failed (${response.status})`)}
-    if(!response.ok){throw new Error(typeof data.detail==='string'?data.detail:JSON.stringify(data.detail||data))}
-    return data;
-  }
-
-  function draw(data){
-    game=data;
-    lvl.textContent=data.character.level;
-    xp.textContent=data.character.xp;
-    coins.textContent=data.character.coins;
-    question.textContent=data.battle.prompt||'Battle complete';
-    hp.style.width=Math.max(0,data.battle.hp/data.battle.max_hp*100)+'%';
-    enemyHp.style.width=Math.max(0,data.battle.enemy_hp)+'%';
-    hpText.textContent=data.battle.hp+' HP';
-    enemyText.textContent=data.battle.enemy_hp+' HP';
-    log.textContent=data.message;
-    log.classList.remove('error');
-    ability.disabled=Boolean(data.battle.ability_used)||data.battle.status!=='active';
-    mastery.innerHTML=Object.keys(data.mastery).length
-      ?Object.entries(data.mastery).map(([name,value])=>`<div class="card"><b>${name}</b><div class="mastery"><i style="width:${value}%"></i></div><small>${value}% mastery</small></div>`).join('')
-      :'<div class="card">Complete answers to build a mastery profile.</div>';
-    problemStarted=Date.now();
-  }
-
-  start.addEventListener('click',async()=>{
-    updateCharacterPreview();
-    start.disabled=true;
-    try{
-      draw(await api('/api/start',{
-        display_name:displayName.value.trim()||'MathQuest Student',
-        grade:Number(grade.value),
-        archetype:char.value,
-        variant:variant.value
-      }));
-    }catch(error){log.textContent=error.message;log.classList.add('error')}
-    finally{start.disabled=false}
-  });
-
-  attack.addEventListener('click',async()=>{
-    if(!game){start.click();return}
-    if(answer.value.trim()===''){log.textContent='Enter an answer first.';return}
-    try{
-      const data=await api('/api/answer',{
-        session_id:game.session_id,
-        answer:Number(answer.value),
-        seconds:(Date.now()-problemStarted)/1000
-      });
-      const target=data.event==='hit'||data.event==='victory'?hero:enemy;
-      const effect=data.event==='hit'||data.event==='victory'?'attack':'hurt';
-      target.classList.add(effect);
-      setTimeout(()=>target.classList.remove(effect),500);
-      answer.value='';
-      draw(data);
-    }catch(error){log.textContent=error.message;log.classList.add('error')}
-  });
-
-  ability.addEventListener('click',async()=>{
-    if(!game)return;
-    try{draw(await api('/api/ability',{session_id:game.session_id}))}
-    catch(error){log.textContent=error.message;log.classList.add('error')}
-  });
-
-  answer.addEventListener('keydown',event=>{if(event.key==='Enter')attack.click()});
-  grade.addEventListener('change',updateCharacterPreview);
-  char.addEventListener('change',updateCharacterPreview);
-  variant.addEventListener('change',updateCharacterPreview);
-  updateCharacterPreview();
-</script>
 </body>
 </html>
