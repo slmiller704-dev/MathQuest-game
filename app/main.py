@@ -265,11 +265,38 @@ def mastery_dictionary(database: Session, student_id: str) -> dict[str, float]:
 
 
 def allowed_skills_for_grade(grade: int) -> list[str]:
+    if grade == 3:
+        return [
+            "multiplication",
+            "division",
+            "place_value",
+            "fractions",
+            "measurement",
+            "area_perimeter",
+            "two_step",
+            "patterns",
+            "geometry",
+        ]
+
     if grade <= 5:
-        return ["multiplication", "division", "fractions"]
+        return [
+            "multiplication",
+            "division",
+            "fractions",
+        ]
+
     if grade <= 8:
-        return ["equations", "percent", "integers"]
-    return ["algebra", "functions", "geometry"]
+        return [
+            "equations",
+            "percent",
+            "integers",
+        ]
+
+    return [
+        "algebra",
+        "functions",
+        "geometry",
+    ]
 
 
 def weakest_skill(database: Session, student_id: str, grade: int) -> str | None:
