@@ -33,7 +33,32 @@
     animation: float 2.4s ease-in-out infinite;
     }
     border-radius:50%;overflow:hidden;border:5px solid #ffffff55;box-shadow:0 0 35px #56d8ff55;background:#07182b;animation:float 2.4s ease-in-out infinite}
-    .character-preview{width:100%;height:100%;object-fit:cover;object-position:top center;opacity:1;transform:scale(1);transition:opacity .22s ease,transform .22s ease}
+    .character-preview {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    /*
+      Show the entire character image
+      instead of cropping it.
+    */
+    object-fit: contain;
+    object-position: center bottom;
+
+    /*
+      Gives the character a little
+      breathing room inside the circle.
+    */
+    padding: 8px;
+
+    opacity: 1;
+    transform: scale(.94);
+
+    transition:
+        opacity .22s ease,
+        transform .22s ease;
+}
     .character-preview.is-switching{opacity:0;transform:scale(.96)}
     .enemy{margin:auto;width:min(260px,38vw);aspect-ratio:1;border-radius:50%;border:5px solid #ffffff55;background:radial-gradient(circle,#b34dff,#361650 70%);display:grid;place-items:center;font-size:5rem;animation:pulse 1.5s infinite}
     .enemy:after{content:'∑'}
