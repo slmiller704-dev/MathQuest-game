@@ -194,13 +194,19 @@ def test_grade3_incorrect_answer_reduces_hp():
     assert answer_data["mastery"]
 
 
-def test_grade3_profile_is_saved():
-    start_response = start_grade3_battle(
-        archetype="Fairy",
-        variant="girl",
+def test_grade3_profile_is_saved(client):
+    start_response = client.post(
+        "/api/start",
+        json={
+            "grade": 3,
+            "archetype": "Fairy",
+            "variant": "girl",
+            "display_name": "Grade 3 Student",
+        },
     )
 
     assert start_response.status_code == 200
+    assert "mathquest_profile_id" in client.cookies
 
     profile_response = client.get("/api/profile")
 
