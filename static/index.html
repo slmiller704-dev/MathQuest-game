@@ -23,56 +23,40 @@
     .fighter{text-align:center}
     .avatar-frame {
     margin: 0 auto;
-
-    width: clamp(190px, 28vw, 320px);
+    width: clamp(200px, 28vw, 320px);
     aspect-ratio: 1;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 50%;
     overflow: hidden;
-
     border: 4px solid #ffffff55;
-
-    background:
-        radial-gradient(
-            circle at center,
-            #18395c,
-            #07182b 75%
-        );
-
-    box-shadow:
-        0 0 28px #56d8ff55;
-
-    animation:
-        float 2.4s ease-in-out infinite;
+    background: radial-gradient(
+        circle at center,
+        #18395c,
+        #07182b 75%
+    );
+    box-shadow: 0 0 28px #56d8ff55;
+    animation: float 2.4s ease-in-out infinite;
 }
-
 
 .character-preview {
     display: block;
-
     width: 100%;
     height: 100%;
-
     object-fit: cover;
-    object-position: center 20%;
-
+    object-position: center 18%;
     padding: 0;
-
     opacity: 1;
-    transform: scale(1.06);
-
+    transform: scale(1.04);
     transition:
-        opacity 0.22s ease,
-        transform 0.22s ease;
+        opacity .22s ease,
+        transform .22s ease;
 }
 
 .character-preview.is-switching {
     opacity: 0;
-    transform: scale(0.96);
+    transform: scale(.94);
 }
 
 @media (max-width: 650px) {
@@ -82,11 +66,11 @@
     }
 
     .character-preview {
-        transform: scale(1.03);
+        transform: scale(1.02);
     }
 
     .character-preview.is-switching {
-        transform: scale(0.95);
+        transform: scale(.94);
     }
 }
     .enemy{margin:auto;width:min(260px,38vw);aspect-ratio:1;border-radius:50%;border:5px solid #ffffff55;background:radial-gradient(circle,#b34dff,#361650 70%);display:grid;place-items:center;font-size:5rem;animation:pulse 1.5s infinite}
