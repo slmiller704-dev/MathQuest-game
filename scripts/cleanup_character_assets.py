@@ -46,6 +46,8 @@ def find_references(repo: Path, relative_targets: list[str]) -> dict[str, list[s
 
     findings: dict[str, list[str]] = {}
     for path in repo.rglob("*"):
+        if path.resolve() == Path(__file__).resolve():
+            continue
         if not path.is_file() or path.suffix.lower() not in TEXT_EXTENSIONS:
             continue
         if any(part in SKIP_PARTS for part in path.parts):
