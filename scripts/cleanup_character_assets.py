@@ -44,34 +44,71 @@ def find_references(repo: Path, relative_targets: list[str]) -> dict[str, list[s
             needles.add("/" + normalized)
             needles.add(normalized.removeprefix("static/"))
 
+    def find_references(
+    repo: Path,
+    relative_targets: list[str],
+) -> dict[str, list[str]]:
+    needles = set()
+
+    for target in relative_targets:
+        normalized = target.replace("\\", "/")
+
+        needles.add(normalized)
+
+        if normalized.startswith("static/"):
+            needles.add("/" + normalized)
+            needles.add(
+                normalized.removeprefix("static/")
+            )
+
     findings: dict[str, list[str]] = {}
+
+    for path in repo.rglob("*"):
         if not path.is_file():
             continue
 
-        relative_path = path.relative_to(repo).as_posix()
+        relative_path = (
+            path.relative_to(repo).as_posix()
+        )
 
-        if relative_path == "scripts/cleanup_character_assets.py":
+        # Ignore this cleanup script because OLD_ASSETS
+        # intentionally contains the filenames being searched for.
+        if (
+            relative_path
+            == "scripts/cleanup_character_assets.py"
+        ):
             continue
 
-    if path.suffix.lower() not in TEXT_EXTENSIONS:
-        continue
+        if (
+            path.suffix.lower()
+            not in TEXT_EXTENSIONS
+        ):
+            continue
 
-    if any(
-        part in SKIP_PARTS
-        for part in path.parts
-    ):
-        continue
-        if not path.is_file() or path.suffix.lower() not in TEXT_EXTENSIONS:
+        if any(
+            part in SKIP_PARTS
+            for part in path.parts
+        ):
             continue
-        if any(part in SKIP_PARTS for part in path.parts):
-            continue
+
         try:
-            content = path.read_text(encoding="utf-8")
+            content = path.read_text(
+                encoding="utf-8"
+            )
         except UnicodeDecodeError:
             continue
-        matched = sorted(needle for needle in needles if needle in content)
+
+        matched = sorted(
+            needle
+            for needle in needles
+            if needle in content
+        )
+
         if matched:
-            findings[str(path.relative_to(repo))] = matched
+            findings[
+                relative_path
+            ] = matched
+
     return findings
 
 
