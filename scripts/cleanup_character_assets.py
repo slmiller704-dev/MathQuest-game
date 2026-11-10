@@ -34,7 +34,6 @@ OLD_DIRECTORIES = (
 TEXT_EXTENSIONS = {".html", ".js", ".css", ".py", ".md", ".yaml", ".yml", ".json"}
 SKIP_PARTS = {".git", ".venv", "venv", "__pycache__", ".asset-backup"}
 
-
 def find_references(
     repo: Path,
     relative_targets: list[str],
@@ -99,7 +98,6 @@ def find_references(
             findings[relative_path] = matched
 
     return findings
-
 
 def remove_pycache(repo: Path, apply: bool) -> None:
     for directory in repo.rglob("__pycache__"):
