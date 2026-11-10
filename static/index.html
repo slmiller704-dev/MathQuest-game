@@ -2,13 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1"
     >
+
     <title>MathQuest Live</title>
 
-   <style>
+    <style>
         /* =========================================================
            THEME
            ========================================================= */
@@ -17,11 +19,12 @@
             --gold: #ffd166;
             --cyan: #56d8ff;
             --panel: #102541;
-            --bg: #061321;
+            --background: #061321;
             --muted: #9fb4c9;
             --danger: #ff7f8a;
+            --success: #66e08c;
             --border: #355578;
-            --input-bg: #07182b;
+            --input-background: #07182b;
         }
 
         * {
@@ -30,17 +33,19 @@
 
         html {
             min-width: 320px;
+            scroll-behavior: smooth;
+            scroll-padding-top: 110px;
         }
 
         body {
-            margin: 0;
             min-width: 320px;
+            margin: 0;
 
             background:
                 radial-gradient(
                     circle at top,
                     #173c69,
-                    var(--bg) 55%
+                    var(--background) 55%
                 );
 
             color: #fff;
@@ -52,24 +57,1710 @@
         }
 
         /* =========================================================
-           HEADER
+           HEADER AND NAVIGATION
            ========================================================= */
 
-        header {
+        .site-header {
             position: sticky;
             top: 0;
-            z-index: 5;
+            z-index: 10;
 
-            display: flex;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
-            justify-content: space-between;
 
-            gap: 16px;
+            gap: 24px;
 
-            padding: 16px 5vw;
+            padding: 14px 5vw;
 
             background: #061321f2;
-                                    );
+            border-bottom: 1px solid #ffffff12;
+
+            backdrop-filter: blur(8px);
+        }
+
+        .brand h1 {
+            margin: 0;
+
+            color: var(--gold);
+
+            font-size:
+                clamp(
+                    1.4rem,
+                    3vw,
+                    2.1rem
+                );
+        }
+
+        .subtitle {
+            color: var(--muted);
+        }
+
+        .site-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+        }
+
+        .site-navigation a {
+            padding: 9px 12px;
+
+            color: #e7f2ff;
+
+            border-radius: 8px;
+
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .site-navigation a:hover,
+        .site-navigation a:focus-visible {
+            background: #244464;
+            color: var(--gold);
+        }
+
+        .player-stats {
+            color: #e7f2ff;
+            white-space: nowrap;
+        }
+
+        /*
+         * The menu button is hidden on larger screens.
+         * A mobile media query displays it on phones.
+         */
+        .menu-toggle {
+            display: none;
+
+            width: 46px;
+            height: 44px;
+            padding: 9px;
+
+            border: 1px solid #ffffff33;
+            border-radius: 9px;
+
+            background: #18395c;
+            color: #fff;
+
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            display: block;
+
+            width: 100%;
+            height: 3px;
+
+            margin: 4px 0;
+
+            background: #fff;
+
+            border-radius: 999px;
+
+            transition:
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        .menu-toggle[aria-expanded="true"] span:nth-child(1) {
+            transform:
+                translateY(7px)
+                rotate(45deg);
+        }
+
+        .menu-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle[aria-expanded="true"] span:nth-child(3) {
+            transform:
+                translateY(-7px)
+                rotate(-45deg);
+        }
+
+        /* =========================================================
+           MAIN LAYOUT
+           ========================================================= */
+
+        main {
+            width: min(1200px, 100%);
+            margin: 0 auto;
+            padding: 20px 5vw 40px;
+        }
+
+        .setup,
+        .arena,
+        .lesson,
+        .card {
+            padding: 18px;
+
+            background: #102541e8;
+
+            border: 1px solid var(--border);
+            border-radius: 18px;
+        }
+
+        .arena,
+        .lesson {
+            margin-top: 16px;
+        }
+
+        /* =========================================================
+           FORM CONTROLS
+           ========================================================= */
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: end;
+
+            gap: 12px;
+        }
+
+        .setup .controls > label {
+            flex: 1 1 150px;
+        }
+
+        label {
+            display: grid;
+
+            gap: 5px;
+
+            color: #dcecff;
+
+            font-weight: 600;
+        }
+
+        select,
+        input,
+        button {
+            min-height: 44px;
+            padding: 10px 12px;
+
+            border-radius: 9px;
+
+            font: inherit;
+        }
+
+        select,
+        input {
+            width: 100%;
+
+            background: var(--input-background);
+            color: #fff;
+
+            border: 1px solid #5d7690;
+        }
+
+        select:focus-visible,
+        input:focus-visible,
+        button:focus-visible,
+        a:focus-visible {
+            outline: 3px solid var(--cyan);
+            outline-offset: 2px;
+        }
+
+        button {
+            border: 0;
+
+            background: var(--gold);
+            color: #17202a;
+
+            font-weight: 800;
+
+            cursor: pointer;
+        }
+
+        button:hover:not(:disabled) {
+            filter: brightness(1.06);
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+        }
+
+        .ghost {
+            background: #244464;
+            color: #fff;
+        }
+
+        /* =========================================================
+           BATTLE LAYOUT
+           ========================================================= */
+
+        .fighters {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+
+            gap: clamp(16px, 4vw, 40px);
+
+            margin: 20px 0 28px;
+        }
+
+        .fighter {
+            min-width: 0;
+
+            text-align: center;
+        }
+
+        .fighter h3 {
+            margin: 12px 0 10px;
+        }
+
+        /* =========================================================
+           PLAYER PORTRAIT
+           ========================================================= */
+
+        /*
+         * This is the circular frame around the selected character.
+         */
+        .avatar-frame {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: clamp(190px, 26vw, 300px);
+            aspect-ratio: 1;
+            margin: 0 auto;
+
+            overflow: hidden;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    #18395c,
+                    #07182b 75%
+                );
+
+            border: 4px solid #ffffff55;
+            border-radius: 50%;
+
+            box-shadow:
+                0 0 28px #56d8ff55;
+
+            animation:
+                float 2.4s ease-in-out infinite;
+        }
+
+        /*
+         * The individual transparent PNG is displayed inside the
+         * circle. object-fit: contain keeps the complete character
+         * visible rather than cutting off hats, wings, or armor.
+         */
+        .character-preview {
+            display: block;
+
+            width: 100%;
+            height: 100%;
+            padding: 8px;
+
+            object-fit: contain;
+            object-position: center center;
+
+            opacity: 1;
+
+            transform: scale(0.94);
+
+            transition:
+                opacity 0.22s ease,
+                transform 0.22s ease;
+        }
+
+        /*
+         * This class is applied briefly while another portrait loads.
+         */
+        .character-preview.is-switching {
+            opacity: 0;
+            transform: scale(0.86);
+        }
+
+        /* =========================================================
+           NUMBER GUARDIAN
+           ========================================================= */
+
+        .enemy {
+            display: grid;
+            place-items: center;
+
+            width: clamp(190px, 26vw, 300px);
+            aspect-ratio: 1;
+            margin: 0 auto;
+
+            background:
+                radial-gradient(
+                    circle,
+                    #b34dff,
+                    #361650 70%
+                );
+
+            border: 5px solid #ffffff55;
+            border-radius: 50%;
+
+            font-size: clamp(3rem, 8vw, 5rem);
+
+            animation:
+                pulse 1.5s infinite;
+        }
+
+        .enemy::after {
+            content: "∑";
+        }
+
+        /* =========================================================
+           HEALTH BARS
+           ========================================================= */
+
+        .bar {
+            width: 100%;
+            height: 14px;
+
+            overflow: hidden;
+
+            background: #31485f;
+
+            border-radius: 10px;
+        }
+
+        .bar i {
+            display: block;
+
+            height: 100%;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--cyan),
+                    var(--gold)
+                );
+
+            transition:
+                width 0.35s ease;
+        }
+
+        /* =========================================================
+           QUESTION AND BATTLE CONTROLS
+           ========================================================= */
+
+        .question {
+            margin: 25px 0;
+
+            text-align: center;
+
+            font-size:
+                clamp(
+                    1.6rem,
+                    4vw,
+                    3.2rem
+                );
+
+            line-height: 1.2;
+        }
+
+        .battle-controls {
+            justify-content: center;
+        }
+
+        .battle-controls input {
+            flex: 1 1 180px;
+
+            max-width: 300px;
+        }
+
+        /* =========================================================
+           MASTERY
+           ========================================================= */
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(
+                    auto-fit,
+                    minmax(160px, 1fr)
+                );
+
+            gap: 10px;
+        }
+
+        .mastery {
+            height: 10px;
+
+            overflow: hidden;
+
+            background: #2b4158;
+
+            border-radius: 8px;
+        }
+
+        .mastery i {
+            display: block;
+
+            height: 100%;
+
+            background: var(--success);
+        }
+
+        /* =========================================================
+           MESSAGES
+           ========================================================= */
+
+        .log {
+            min-height: 26px;
+            margin-bottom: 0;
+
+            color: var(--gold);
+        }
+
+        .preview-status {
+            min-height: 20px;
+            margin: 8px 0 0;
+
+            color: var(--muted);
+
+            font-size: 0.9rem;
+        }
+
+        .error {
+            color: var(--danger);
+        }
+
+        /* =========================================================
+           ANIMATIONS
+           ========================================================= */
+
+        .attack {
+            animation:
+                strike 0.45s ease;
+        }
+
+        .hurt {
+            animation:
+                shake 0.38s ease;
+        }
+
+        @keyframes float {
+            50% {
+                transform:
+                    translateY(-8px);
+            }
+        }
+
+        @keyframes pulse {
+            50% {
+                box-shadow:
+                    0 0 50px #b34dff;
+            }
+        }
+
+        @keyframes strike {
+            50% {
+                transform:
+                    translateX(40px)
+                    scale(1.06);
+            }
+        }
+
+        @keyframes shake {
+            25% {
+                transform:
+                    translateX(-10px);
+            }
+
+            75% {
+                transform:
+                    translateX(10px);
+            }
+        }
+
+        /* =========================================================
+           TABLETS
+           ========================================================= */
+
+        @media (max-width: 800px) {
+            .site-header {
+                gap: 14px;
+            }
+
+            .avatar-frame,
+            .enemy {
+                width: min(38vw, 240px);
+            }
+        }
+
+        /* =========================================================
+           PHONES
+           ========================================================= */
+
+        @media (max-width: 650px) {
+            html {
+                scroll-padding-top: 150px;
+            }
+
+            .site-header {
+                grid-template-columns:
+                    minmax(0, 1fr)
+                    auto;
+
+                gap: 10px;
+
+                padding: 12px 16px;
+            }
+
+            .brand {
+                min-width: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+
+                grid-column: 2;
+                grid-row: 1;
+            }
+
+            .site-navigation {
+                display: none;
+
+                grid-column: 1 / -1;
+
+                flex-direction: column;
+                align-items: stretch;
+
+                gap: 6px;
+
+                padding-top: 10px;
+
+                border-top:
+                    1px solid #ffffff1f;
+            }
+
+            .site-navigation.is-open {
+                display: flex;
+            }
+
+            .site-navigation a {
+                width: 100%;
+                padding: 12px;
+
+                background: #102541;
+
+                text-align: center;
+            }
+
+            .player-stats {
+                grid-column: 1 / -1;
+
+                color: var(--muted);
+
+                font-size: 0.9rem;
+                white-space: normal;
+            }
+
+            main {
+                padding: 14px 12px 32px;
+            }
+
+            .setup,
+            .arena,
+            .lesson,
+            .card {
+                padding: 14px;
+
+                border-radius: 14px;
+            }
+
+            /*
+             * Keep the player and enemy side-by-side while reducing
+             * their size enough to fit on typical phone displays.
+             */
+            .fighters {
+                grid-template-columns:
+                    repeat(
+                        2,
+                        minmax(0, 1fr)
+                    );
+
+                gap: 10px;
+
+                margin: 18px 0 22px;
+            }
+
+            .avatar-frame,
+            .enemy {
+                width:
+                    min(
+                        40vw,
+                        180px
+                    );
+            }
+
+            .character-preview {
+                padding: 6px;
+
+                transform:
+                    scale(0.90);
+            }
+
+            .character-preview.is-switching {
+                transform:
+                    scale(0.84);
+            }
+
+            .fighter h3 {
+                font-size: 1rem;
+            }
+
+            .question {
+                margin: 18px 0;
+
+                font-size:
+                    clamp(
+                        1.45rem,
+                        7vw,
+                        2.2rem
+                    );
+            }
+
+            .battle-controls {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .battle-controls input {
+                grid-column: 1 / -1;
+
+                max-width: none;
+            }
+
+            .battle-controls button {
+                width: 100%;
+            }
+        }
+
+        /* =========================================================
+           VERY SMALL PHONES
+           ========================================================= */
+
+        @media (max-width: 400px) {
+            .avatar-frame,
+            .enemy {
+                width: min(38vw, 145px);
+            }
+
+            .character-preview {
+                padding: 4px;
+
+                transform:
+                    scale(0.88);
+            }
+
+            .fighter h3 {
+                font-size: 0.9rem;
+            }
+
+            .preview-status {
+                font-size: 0.78rem;
+            }
+
+            .setup .controls {
+                display: grid;
+                grid-template-columns: 1fr;
+                align-items: stretch;
+            }
+
+            .setup button {
+                width: 100%;
+            }
+        }
+
+        /* Respect the device's reduced-motion preference. */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================================================
+         HEADER
+         ========================================================= -->
+
+    <header class="site-header">
+
+        <div class="brand">
+            <h1>MathQuest Live</h1>
+
+            <small class="subtitle">
+                Adaptive learning battles
+            </small>
+        </div>
+
+        <!-- Mobile hamburger button -->
+        <button
+            id="menuToggle"
+            class="menu-toggle"
+            type="button"
+            aria-label="Open navigation menu"
+            aria-controls="mobileNavigation"
+            aria-expanded="false"
+        >
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </button>
+
+        <!-- Main navigation -->
+        <nav
+            id="mobileNavigation"
+            class="site-navigation"
+            aria-label="MathQuest navigation"
+        >
+            <a href="#characterSetup">
+                Character
+            </a>
+
+            <a href="#battleArena">
+                Battle
+            </a>
+
+            <a href="#learningMastery">
+                Mastery
+            </a>
+        </nav>
+
+        <!-- Updated by the draw() JavaScript function -->
+        <div class="player-stats">
+            Level <b id="lvl">1</b>
+            • XP <b id="xp">0</b>
+            • Coins <b id="coins">0</b>
+        </div>
+
+    </header>
+
+    <main>
+
+        <!-- =====================================================
+             CHARACTER SETUP
+             ===================================================== -->
+
+        <section
+            id="characterSetup"
+            class="setup"
+        >
+            <div class="controls">
+
+                <label>
+                    Player name
+
+                    <input
+                        id="displayName"
+                        type="text"
+                        value="Samuel"
+                        maxlength="80"
+                        autocomplete="name"
+                    >
+                </label>
+
+                <!-- Grades 3-8 use younger character artwork. -->
+                <label>
+                    Grade
+
+                    <select id="grade">
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+
+                        <!-- Grades 9-12 use high-school artwork. -->
+                        <option
+                            value="9"
+                            selected
+                        >
+                            9
+                        </option>
+
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                </label>
+
+                <!-- JavaScript inserts all nine characters here. -->
+                <label>
+                    Character
+
+                    <select id="char"></select>
+                </label>
+
+                <!-- Select the matching boy/girl portrait folder. -->
+                <label>
+                    Version
+
+                    <select id="variant">
+                        <option value="boy">
+                            Boy
+                        </option>
+
+                        <option value="girl">
+                            Girl
+                        </option>
+                    </select>
+                </label>
+
+                <button
+                    id="start"
+                    type="button"
+                >
+                    Start Battle
+                </button>
+
+            </div>
+        </section>
+
+        <!-- =====================================================
+             BATTLE ARENA
+             ===================================================== -->
+
+        <section
+            id="battleArena"
+            class="arena"
+        >
+            <div class="fighters">
+
+                <!-- Player -->
+                <div class="fighter">
+
+                    <div
+                        id="hero"
+                        class="avatar-frame"
+                    >
+                        <img
+                            id="characterPreview"
+                            class="character-preview"
+                            alt="Selected MathQuest character"
+                        >
+                    </div>
+
+                    <h3 id="heroName">
+                        Choose a hero
+                    </h3>
+
+                    <div
+                        class="bar"
+                        aria-label="Player health"
+                    >
+                        <i
+                            id="hp"
+                            style="width: 100%"
+                        ></i>
+                    </div>
+
+                    <small id="hpText">
+                        HP
+                    </small>
+
+                    <!-- Shows the selected band or missing file error. -->
+                    <p
+                        id="previewStatus"
+                        class="preview-status"
+                        aria-live="polite"
+                    ></p>
+
+                </div>
+
+                <!-- Number Guardian -->
+                <div class="fighter">
+
+                    <div
+                        id="enemy"
+                        class="enemy"
+                        aria-label="Number Guardian"
+                    ></div>
+
+                    <h3>
+                        Number Guardian
+                    </h3>
+
+                    <div
+                        class="bar"
+                        aria-label="Number Guardian health"
+                    >
+                        <i
+                            id="enemyHp"
+                            style="width: 100%"
+                        ></i>
+                    </div>
+
+                    <small id="enemyText">
+                        100 HP
+                    </small>
+
+                </div>
+
+            </div>
+
+            <!-- Current math question -->
+            <div
+                id="question"
+                class="question"
+            >
+                Start a battle to begin learning.
+            </div>
+
+            <!-- Answer and battle controls -->
+            <div class="controls battle-controls">
+
+                <input
+                    id="answer"
+                    type="text"
+                    inputmode="decimal"
+                    autocomplete="off"
+                    placeholder="Enter answer"
+                    aria-label="Math answer"
+                >
+
+                <button
+                    id="attack"
+                    type="button"
+                >
+                    Attack
+                </button>
+
+                <button
+                    id="ability"
+                    type="button"
+                    class="ghost"
+                    disabled
+                >
+                    Use Ability
+                </button>
+
+            </div>
+
+            <!-- Battle messages -->
+            <p
+                id="log"
+                class="log"
+                aria-live="polite"
+            ></p>
+
+        </section>
+
+        <!-- =====================================================
+             LEARNING MASTERY
+             ===================================================== -->
+
+        <section
+            id="learningMastery"
+            class="lesson"
+        >
+            <h2>
+                Learning Mastery
+            </h2>
+
+            <p>
+                The next question favors skills that need more practice.
+            </p>
+
+            <!-- JavaScript creates mastery cards here. -->
+            <div
+                id="mastery"
+                class="grid"
+            ></div>
+        </section>
+
+    </main>
+
+    <script>
+        "use strict";
+
+        /* =========================================================
+           CHARACTER CONFIGURATION
+           ========================================================= */
+
+        /*
+         * These names must match the character keys in app/main.py.
+         */
+        const CLASSES = [
+            "Knight",
+            "Wizard",
+            "Engineer",
+            "Ranger",
+            "Ninja",
+            "Paladin",
+            "Fairy",
+            "Jester",
+            "Warlock"
+        ];
+
+        /* Small helper for retrieving elements by ID. */
+        const $ = id =>
+            document.getElementById(id);
+
+        /* =========================================================
+           PAGE ELEMENTS
+           ========================================================= */
+
+        const grade =
+            $("grade");
+
+        const char =
+            $("char");
+
+        const variant =
+            $("variant");
+
+        const displayName =
+            $("displayName");
+
+        const hero =
+            $("hero");
+
+        const characterPreview =
+            $("characterPreview");
+
+        const heroName =
+            $("heroName");
+
+        const previewStatus =
+            $("previewStatus");
+
+        const lvl =
+            $("lvl");
+
+        const xp =
+            $("xp");
+
+        const coins =
+            $("coins");
+
+        const question =
+            $("question");
+
+        const hp =
+            $("hp");
+
+        const enemyHp =
+            $("enemyHp");
+
+        const hpText =
+            $("hpText");
+
+        const enemyText =
+            $("enemyText");
+
+        const log =
+            $("log");
+
+        const mastery =
+            $("mastery");
+
+        const answer =
+            $("answer");
+
+        const start =
+            $("start");
+
+        const attack =
+            $("attack");
+
+        const ability =
+            $("ability");
+
+        const enemy =
+            $("enemy");
+
+        const menuToggle =
+            $("menuToggle");
+
+        const mobileNavigation =
+            $("mobileNavigation");
+
+        /* =========================================================
+           CREATE THE CHARACTER OPTIONS
+           ========================================================= */
+
+        char.innerHTML =
+            CLASSES
+                .map(
+                    name =>
+                        `<option value="${name}">${name}</option>`
+                )
+                .join("");
+
+        /* =========================================================
+           LOCAL GAME STATE
+           ========================================================= */
+
+        let game = null;
+
+        /*
+         * Used to calculate how quickly the current problem
+         * was answered.
+         */
+        let problemStarted =
+            Date.now();
+
+        /*
+         * Prevents an older image request from replacing a newer
+         * character selection.
+         */
+        let previewRequest = 0;
+
+        /* =========================================================
+           CHARACTER PATHS
+           ========================================================= */
+
+        /*
+         * Grades 3-8 use the younger artwork.
+         * Grades 9-12 use the high-school artwork.
+         */
+        function characterBand() {
+            return Number(grade.value) <= 8
+                ? "younger"
+                : "highschool";
+        }
+
+        /*
+         * Example paths:
+         *
+         * /static/characters/younger/boy/knight.png
+         * /static/characters/younger/girl/wizard.png
+         * /static/characters/highschool/boy/ninja.png
+         * /static/characters/highschool/girl/paladin.png
+         */
+        function individualPath() {
+            const archetype =
+                char.value.toLowerCase();
+
+            const version =
+                variant.value;
+
+            return (
+                `/static/characters/` +
+                `${characterBand()}/` +
+                `${version}/` +
+                `${archetype}.png`
+            );
+        }
+
+        /* =========================================================
+           CHARACTER PREVIEW
+           ========================================================= */
+
+        function updateCharacterPreview() {
+            const requestId =
+                ++previewRequest;
+
+            const path =
+                individualPath();
+
+            /*
+             * Fade the previous portrait out while the new image
+             * is preloaded.
+             */
+            characterPreview
+                .classList
+                .add("is-switching");
+
+            previewStatus
+                .classList
+                .remove("error");
+
+            previewStatus.textContent =
+                "Loading character preview…";
+
+            heroName.textContent =
+                `${
+                    variant.value === "boy"
+                        ? "Boy"
+                        : "Girl"
+                } ${char.value}`;
+
+            const next =
+                new Image();
+
+            next.onload = () => {
+                /*
+                 * Ignore the result if the player selected another
+                 * character while this image was loading.
+                 */
+                if (
+                    requestId !==
+                    previewRequest
+                ) {
+                    return;
+                }
+
+                characterPreview.src =
+                    path;
+
+                characterPreview.alt =
+                    `${
+                        variant.value === "boy"
+                            ? "Boy"
+                            : "Girl"
+                    } ${char.value} character`;
+
+                previewStatus
+                    .classList
+                    .remove("error");
+
+                previewStatus.textContent =
+                    `${
+                        characterBand() === "younger"
+                            ? "Grades 3–8"
+                            : "Grades 9–12"
+                    } • ${
+                        variant.value === "boy"
+                            ? "Boy"
+                            : "Girl"
+                    } version`;
+
+                /*
+                 * Fade the newly loaded portrait into the frame.
+                 */
+                requestAnimationFrame(
+                    () => {
+                        characterPreview
+                            .classList
+                            .remove(
+                                "is-switching"
+                            );
+                    }
+                );
+            };
+
+            /*
+             * Do not fall back to the old combined roster.
+             * Report the exact missing portrait path instead.
+             */
+            next.onerror = () => {
+                if (
+                    requestId !==
+                    previewRequest
+                ) {
+                    return;
+                }
+
+                characterPreview
+                    .removeAttribute("src");
+
+                characterPreview.alt = "";
+
+                previewStatus.textContent =
+                    `Missing portrait: ${path}`;
+
+                previewStatus
+                    .classList
+                    .add("error");
+
+                characterPreview
+                    .classList
+                    .remove(
+                        "is-switching"
+                    );
+            };
+
+            /*
+             * Assigning src starts the preload.
+             */
+            next.src =
+                path;
+        }
+
+        /* =========================================================
+           API HELPER
+           ========================================================= */
+
+        /*
+         * Uses the existing FastAPI endpoints:
+         *
+         * POST /api/start
+         * POST /api/answer
+         * POST /api/ability
+         */
+        async function api(
+            path,
+            body
+        ) {
+            const response =
+                await fetch(
+                    path,
+                    {
+                        method: "POST",
+
+                        credentials:
+                            "include",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(body)
+                    }
+                );
+
+            const text =
+                await response.text();
+
+            let data;
+
+            try {
+                data =
+                    text
+                        ? JSON.parse(text)
+                        : {};
+            } catch {
+                throw new Error(
+                    text ||
+                    `Request failed (${response.status})`
+                );
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    typeof data.detail === "string"
+                        ? data.detail
+                        : JSON.stringify(
+                            data.detail ||
+                            data
+                        )
+                );
+            }
+
+            return data;
+        }
+
+        /* =========================================================
+           MASTERY DISPLAY
+           ========================================================= */
+
+        function drawMastery(
+            masteryData
+        ) {
+            const entries =
+                Object.entries(
+                    masteryData || {}
+                );
+
+            if (!entries.length) {
+                mastery.innerHTML = `
+                    <div class="card">
+                        Complete answers to build
+                        a mastery profile.
+                    </div>
+                `;
+
+                return;
+            }
+
+            mastery.innerHTML =
+                entries
+                    .map(
+                        ([name, rawValue]) => {
+                            const value =
+                                Math.max(
+                                    0,
+                                    Math.min(
+                                        100,
+                                        Number(rawValue) || 0
+                                    )
+                                );
+
+                            return `
+                                <div class="card">
+                                    <b>${name}</b>
+
+                                    <div class="mastery">
+                                        <i
+                                            style="width: ${value}%"
+                                        ></i>
+                                    </div>
+
+                                    <small>
+                                        ${value}% mastery
+                                    </small>
+                                </div>
+                            `;
+                        }
+                    )
+                    .join("");
+        }
+
+        /* =========================================================
+           DRAW THE LATEST GAME STATE
+           ========================================================= */
+
+        function draw(data) {
+            game =
+                data;
+
+            lvl.textContent =
+                data.character.level;
+
+            xp.textContent =
+                data.character.xp;
+
+            coins.textContent =
+                data.character.coins;
+
+            question.textContent =
+                data.battle.prompt ||
+                "Battle complete";
+
+            /*
+             * Convert current HP into a percentage of maximum HP.
+             */
+            const playerHpPercent =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        (
+                            data.battle.hp /
+                            data.battle.max_hp
+                        ) * 100
+                    )
+                );
+
+            const enemyHpPercent =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        data.battle.enemy_hp
+                    )
+                );
+
+            hp.style.width =
+                `${playerHpPercent}%`;
+
+            enemyHp.style.width =
+                `${enemyHpPercent}%`;
+
+            hpText.textContent =
+                `${data.battle.hp} HP`;
+
+            enemyText.textContent =
+                `${data.battle.enemy_hp} HP`;
+
+            log.textContent =
+                data.message || "";
+
+            log.classList
+                .remove("error");
+
+            /*
+             * Each ability can be used once per active battle.
+             */
+            ability.disabled =
+                Boolean(
+                    data.battle.ability_used
+                ) ||
+                data.battle.status !== "active";
+
+            attack.disabled =
+                data.battle.status !== "active";
+
+            answer.disabled =
+                data.battle.status !== "active";
+
+            drawMastery(
+                data.mastery
+            );
+
+            problemStarted =
+                Date.now();
+        }
+
+        /* =========================================================
+           START BATTLE
+           ========================================================= */
+
+        start.addEventListener(
+            "click",
+            async () => {
+                updateCharacterPreview();
+
+                start.disabled =
+                    true;
+
+                log.classList
+                    .remove("error");
+
+                try {
+                    const data =
+                        await api(
+                            "/api/start",
+                            {
+                                display_name:
+                                    displayName
+                                        .value
+                                        .trim() ||
+                                    "MathQuest Student",
+
+                                grade:
+                                    Number(
+                                        grade.value
+                                    ),
+
+                                archetype:
+                                    char.value,
+
+                                variant:
+                                    variant.value
+                            }
+                        );
+
+                    draw(data);
+
+                    answer.disabled =
+                        false;
+
+                    attack.disabled =
+                        false;
+
+                    answer.focus();
+                } catch (error) {
+                    log.textContent =
+                        error.message;
+
+                    log.classList
+                        .add("error");
+                } finally {
+                    start.disabled =
+                        false;
+                }
+            }
+        );
+
+        /* =========================================================
+           ATTACK / SUBMIT ANSWER
+           ========================================================= */
+
+        attack.addEventListener(
+            "click",
+            async () => {
+                /*
+                 * Clicking Attack before starting a battle starts
+                 * one with the current selections.
+                 */
+                if (!game) {
+                    start.click();
+                    return;
+                }
+
+                if (
+                    answer.value.trim() === ""
+                ) {
+                    log.textContent =
+                        "Enter an answer first.";
+
+                    log.classList
+                        .add("error");
+
+                    answer.focus();
+
+                    return;
+                }
+
+                const numericAnswer =
+                    Number(
+                        answer.value
+                    );
+
+                if (
+                    !Number.isFinite(
+                        numericAnswer
+                    )
+                ) {
+                    log.textContent =
+                        "Enter a valid number.";
+
+                    log.classList
+                        .add("error");
+
+                    answer.focus();
+
+                    return;
+                }
+
+                attack.disabled =
+                    true;
+
+                log.classList
+                    .remove("error");
+
+                try {
+                    const data =
+                        await api(
+                            "/api/answer",
+                            {
+                                session_id:
+                                    game.session_id,
+
+                                answer:
+                                    numericAnswer,
+
+                                seconds:
+                                    (
+                                        Date.now() -
+                                        problemStarted
+                                    ) /
+                                    1000
+                            }
+                        );
+
+                    /*
+                     * Correct answers animate the hero.
+                     * Incorrect answers animate the enemy.
+                     */
+                    const successfulAttack =
+                        data.event === "hit" ||
+                        data.event === "victory";
+
+                    const target =
+                        successfulAttack
+                            ? hero
+                            : enemy;
+
+                    const effect =
+                        successfulAttack
+                            ? "attack"
+                            : "hurt";
+
+                    target
+                        .classList
+                        .add(effect);
+
+                    window.setTimeout(
+                        () => {
+                            target
+                                .classList
+                                .remove(effect);
+                        },
+                        500
+                    );
+
+                    answer.value =
+                        "";
 
                     draw(data);
 
@@ -85,6 +1776,70 @@
 
                     log.classList
                         .add("error");
+
+                    attack.disabled =
+                        false;
+                }
+            }
+        );
+
+        /* =========================================================
+           CHARACTER ABILITY
+           ========================================================= */
+
+        ability.addEventListener(
+            "click",
+            async () => {
+                if (!game) {
+                    log.textContent =
+                        "Start a battle before using an ability.";
+
+                    log.classList
+                        .add("error");
+
+                    return;
+                }
+
+                ability.disabled =
+                    true;
+
+                log.classList
+                    .remove("error");
+
+                try {
+                    const data =
+                        await api(
+                            "/api/ability",
+                            {
+                                session_id:
+                                    game.session_id
+                            }
+                        );
+
+                    draw(data);
+
+                    if (
+                        data.battle.status ===
+                        "active"
+                    ) {
+                        answer.focus();
+                    }
+                } catch (error) {
+                    log.textContent =
+                        error.message;
+
+                    log.classList
+                        .add("error");
+
+                    if (
+                        game &&
+                        game.battle.status ===
+                            "active" &&
+                        !game.battle.ability_used
+                    ) {
+                        ability.disabled =
+                            false;
+                    }
                 }
             }
         );
@@ -102,18 +1857,19 @@
                 if (
                     event.key === "Enter"
                 ) {
+                    event.preventDefault();
                     attack.click();
                 }
             }
         );
 
         /* =========================================================
-           CHARACTER SELECTION LISTENERS
+           CHARACTER-SELECTION LISTENERS
            ========================================================= */
 
         /*
-         * Changing any of these values immediately reloads the
-         * corresponding individual character portrait.
+         * Changing the grade, character, or version immediately
+         * loads the appropriate individual portrait.
          */
         grade.addEventListener(
             "change",
@@ -131,12 +1887,101 @@
         );
 
         /* =========================================================
+           MOBILE NAVIGATION
+           ========================================================= */
+
+        /*
+         * Open or close the mobile navigation menu.
+         */
+        menuToggle.addEventListener(
+            "click",
+            () => {
+                const isOpen =
+                    mobileNavigation
+                        .classList
+                        .toggle("is-open");
+
+                menuToggle.setAttribute(
+                    "aria-expanded",
+                    String(isOpen)
+                );
+
+                menuToggle.setAttribute(
+                    "aria-label",
+                    isOpen
+                        ? "Close navigation menu"
+                        : "Open navigation menu"
+                );
+            }
+        );
+
+        /*
+         * Close the menu after selecting a page section.
+         */
+        mobileNavigation
+            .querySelectorAll("a")
+            .forEach(link => {
+                link.addEventListener(
+                    "click",
+                    () => {
+                        mobileNavigation
+                            .classList
+                            .remove("is-open");
+
+                        menuToggle.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+
+                        menuToggle.setAttribute(
+                            "aria-label",
+                            "Open navigation menu"
+                        );
+                    }
+                );
+            });
+
+        /*
+         * Reset the menu when resizing from phone to desktop.
+         */
+        window.addEventListener(
+            "resize",
+            () => {
+                if (
+                    window.innerWidth > 650
+                ) {
+                    mobileNavigation
+                        .classList
+                        .remove("is-open");
+
+                    menuToggle.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                    menuToggle.setAttribute(
+                        "aria-label",
+                        "Open navigation menu"
+                    );
+                }
+            }
+        );
+
+        /* =========================================================
            INITIAL PAGE LOAD
            ========================================================= */
 
         /*
-         * Load the initial character portrait as soon as the page
-         * is ready.
+         * The battle controls remain inactive until a battle begins.
+         */
+        attack.disabled =
+            false;
+
+        ability.disabled =
+            true;
+
+        /*
+         * Load the initial portrait immediately.
          */
         updateCharacterPreview();
     </script>
