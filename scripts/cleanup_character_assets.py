@@ -45,16 +45,13 @@ def find_references(repo: Path, relative_targets: list[str]) -> dict[str, list[s
             needles.add(normalized.removeprefix("static/"))
 
     findings: dict[str, list[str]] = {}
-    for path in repo.rglob("*"):
-    if not path.is_file():
-        continue
+        if not path.is_file():
+            continue
 
-    relative_path = path.relative_to(repo).as_posix()
+        relative_path = path.relative_to(repo).as_posix()
 
-    # Ignore this cleanup script because OLD_ASSETS intentionally
-    # contains the filenames that the script is designed to remove.
-    if relative_path == "scripts/cleanup_character_assets.py":
-        continue
+        if relative_path == "scripts/cleanup_character_assets.py":
+            continue
 
     if path.suffix.lower() not in TEXT_EXTENSIONS:
         continue
