@@ -44,7 +44,7 @@ def find_references(repo: Path, relative_targets: list[str]) -> dict[str, list[s
             needles.add("/" + normalized)
             needles.add(normalized.removeprefix("static/"))
 
-   def find_references(
+def find_references(
     repo: Path,
     relative_targets: list[str],
 ) -> dict[str, list[str]]:
