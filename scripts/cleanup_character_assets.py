@@ -35,15 +35,6 @@ TEXT_EXTENSIONS = {".html", ".js", ".css", ".py", ".md", ".yaml", ".yml", ".json
 SKIP_PARTS = {".git", ".venv", "venv", "__pycache__", ".asset-backup"}
 
 
-def find_references(repo: Path, relative_targets: list[str]) -> dict[str, list[str]]:
-    needles = set()
-    for target in relative_targets:
-        normalized = target.replace("\\", "/")
-        needles.add(normalized)
-        if normalized.startswith("static/"):
-            needles.add("/" + normalized)
-            needles.add(normalized.removeprefix("static/"))
-
 def find_references(
     repo: Path,
     relative_targets: list[str],
@@ -52,7 +43,6 @@ def find_references(
 
     for target in relative_targets:
         normalized = target.replace("\\", "/")
-
         needles.add(normalized)
 
         if normalized.startswith("static/"):
@@ -71,8 +61,9 @@ def find_references(
             path.relative_to(repo).as_posix()
         )
 
-        # Ignore this cleanup script because OLD_ASSETS
-        # intentionally contains the filenames being searched for.
+        # Ignore this cleanup script itself.
+        # OLD_ASSETS intentionally contains the names
+        # that this script is searching for.
         if (
             relative_path
             == "scripts/cleanup_character_assets.py"
@@ -105,9 +96,7 @@ def find_references(
         )
 
         if matched:
-            findings[
-                relative_path
-            ] = matched
+            findings[relative_path] = matched
 
     return findings
 
