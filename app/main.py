@@ -830,7 +830,10 @@ def load_profile_for_update(database: Session, student_id: str) -> StudentProfil
 
 @app.get("/")
 def home() -> FileResponse:
-    return FileResponse("static/index.html")
+    return FileResponse(
+        STATIC_DIR / "index.html",
+        media_type="text/html",
+    )
 
 
 @app.get("/health")
