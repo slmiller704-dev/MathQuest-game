@@ -227,8 +227,11 @@ class AbilityRequest(BaseModel):
 
 
 app = FastAPI(title="MathQuest Persistent Learning Battles", version="3.0")
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
+app.mount(
+    "/static",
+    StaticFiles(directory=str(STATIC_DIR)),
+    name="static",
+)
 
 # -----------------------------------------------------------------------------
 # Helpers
