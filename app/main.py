@@ -840,7 +840,54 @@ def home() -> FileResponse:
 def health(database: Session = Depends(get_db)) -> dict:
     database.execute(text("SELECT 1"))
     return {"status": "ok", "database": "connected"}
+@app.get("/api/characters")
+def character_asset_checklist() -> dict:
+    portraits: list[dict] = []
 
+    for band in CHARACTER_BANDS:
+        for variant in CHARACTER_VARIANTS:
+            for archetype in CHARACTER_ARCHETYPES:
+                relative_path = (
+                    Path("characters")
+                    / band
+                    / variant
+                    / f"{archetype}.png"
+                )
+
+                file_path = (
+                    STATIC_DIR
+                    / relative_path
+                )
+
+                portraits.append(
+                    {
+                        "band": band,
+                        "variant": variant,
+                        "archetype": archetype.title(),
+                        "image_url": (
+                            "/static/"
+                            + relative_path.as_posix()
+                        ),
+                        "available": file_path.is_file(),
+                    }
+                )
+
+    missing = [
+        portrait
+        for portrait in portraits
+        if not portrait["available"]
+    ]
+
+    return {
+        "expected_total": len(portraits),
+        "available_total": (
+            len(portraits) - len(missing)
+        ),
+        "missing_total": len(missing),
+        "complete": not missing,
+        "portraits": portraits,
+        "missing": missing,
+    }
 
 @app.post("/api/start")
 def start_battle(
