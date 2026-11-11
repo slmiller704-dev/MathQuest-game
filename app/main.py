@@ -190,7 +190,24 @@ CHARACTERS = {
     "Jester": {"hp": 100, "power": 11, "ability": "Wildcard"},
     "Warlock": {"hp": 105, "power": 15, "ability": "Arcane Equation"},
 }
+BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_DIR = BASE_DIR / "static"
+CHARACTER_DIR = STATIC_DIR / "characters"
 
+CHARACTER_BANDS = (
+    "younger",
+    "highschool",
+)
+
+CHARACTER_VARIANTS = (
+    "boy",
+    "girl",
+)
+
+CHARACTER_ARCHETYPES = tuple(
+    name.lower()
+    for name in CHARACTERS
+)
 
 class StartRequest(BaseModel):
     grade: int = Field(ge=3, le=12)
