@@ -208,7 +208,11 @@ CHARACTER_ARCHETYPES = tuple(
     name.lower()
     for name in CHARACTERS
 )
-
+app.mount(
+    "/static",
+    StaticFiles(directory=str(STATIC_DIR)),
+    name="static",
+)
 class StartRequest(BaseModel):
     grade: int = Field(ge=3, le=12)
     archetype: str
@@ -835,11 +839,6 @@ def home() -> FileResponse:
         media_type="text/html",
     )
 
-
-@app.get("/health")
-def health(database: Session = Depends(get_db)) -> dict:
-    database.execute(text("SELECT 1"))
-    return {"status": "ok", "database": "connected"}
 @app.get("/api/characters")
 def character_asset_checklist() -> dict:
     portraits: list[dict] = []
@@ -880,9 +879,7 @@ def character_asset_checklist() -> dict:
 
     return {
         "expected_total": len(portraits),
-        "available_total": (
-            len(portraits) - len(missing)
-        ),
+        "available_total": len(portraits) - len(missing),
         "missing_total": len(missing),
         "complete": not missing,
         "portraits": portraits,
