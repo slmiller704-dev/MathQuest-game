@@ -1,5 +1,6 @@
 import os
 import random
+from pathlib import Path
 import uuid
 from datetime import datetime, timezone
 from typing import Generator
@@ -199,6 +200,7 @@ CHARACTER_BANDS = (
     "highschool",
 )
 
+
 CHARACTER_VARIANTS = (
     "boy",
     "girl",
@@ -208,35 +210,57 @@ CHARACTER_ARCHETYPES = tuple(
     name.lower()
     for name in CHARACTERS
 )
-app.mount(
-    "/static",
-    StaticFiles(directory=str(STATIC_DIR)),
-    name="static",
+
+
+CHARACTER_VARIANTS = (
+    "boy",
+    "girl",
+)
+
+CHARACTER_ARCHETYPES = tuple(
+    name.lower()
+    for name in CHARACTERS
 )
 class StartRequest(BaseModel):
     grade: int = Field(ge=3, le=12)
     archetype: str
     variant: str = Field(pattern="^(boy|girl)$")
-    display_name: str = Field(default="MathQuest Student", min_length=2, max_length=80)
+    display_name: str = Field(
+        default="MathQuest Student",
+        min_length=2,
+        max_length=80,
+    )
 
 
 class AnswerRequest(BaseModel):
     session_id: str
     answer: float
-    seconds: float = Field(default=10.0, ge=0, le=300)
+    seconds: float = Field(
+        default=10.0,
+        ge=0,
+        le=300,
+    )
 
 
 class AbilityRequest(BaseModel):
     session_id: str
 
 
-app = FastAPI(title="MathQuest Persistent Learning Battles", version="3.0")
+app = FastAPI(
+    title="MathQuest Persistent Learning Battles",
+    version="3.0",
+)
+
 app.mount(
     "/static",
     StaticFiles(directory=str(STATIC_DIR)),
     name="static",
 )
 
+
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 # Helpers
 # -----------------------------------------------------------------------------
@@ -839,6 +863,19 @@ def home() -> FileResponse:
         media_type="text/html",
     )
 
+@app.get("/health")
+def health(
+    database: Session = Depends(get_db),
+) -> dict:
+    database.execute(
+        text("SELECT 1")
+    )
+
+    return {
+        "status": "ok",
+        "database": "connected",
+    }
+
 @app.get("/api/characters")
 def character_asset_checklist() -> dict:
     portraits: list[dict] = []
@@ -854,9 +891,9 @@ def character_asset_checklist() -> dict:
                 )
 
                 file_path = (
-                    STATIC_DIR
-                    / relative_path
-                )
+                          STATIC_DIR 
+			  / relative_path
+		)
 
                 portraits.append(
                     {
