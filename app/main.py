@@ -105,6 +105,10 @@ class BattleSession(Base):
     player_hp: Mapped[int] = mapped_column(Integer, default=100)
     player_max_hp: Mapped[int] = mapped_column(Integer, default=100)
     enemy_hp: Mapped[int] = mapped_column(Integer, default=100)
+    enemy_ability: Mapped[str] = mapped_column(String(40), default="Number Surge")
+    enemy_cooldown: Mapped[int] = mapped_column(Integer, default=3)
+    enemy_cooldown_remaining: Mapped[int] = mapped_column(Integer, default=3)
+    enemy_last_action: Mapped[str | None] = mapped_column(String(255), nullable=True)
     streak: Mapped[int] = mapped_column(Integer, default=0)
     ability_used: Mapped[bool] = mapped_column(Boolean, default=False)
     status: Mapped[str] = mapped_column(String(20), default="active", index=True)
@@ -191,6 +195,13 @@ CHARACTERS = {
     "Jester": {"hp": 100, "power": 11, "ability": "Wildcard"},
     "Warlock": {"hp": 105, "power": 15, "ability": "Arcane Equation"},
 }
+
+ENEMY_ABILITIES = {
+    "Number Surge": {"cooldown": 3, "description": "Deals 10 extra damage."},
+    "Equation Shield": {"cooldown": 4, "description": "Restores up to 15 enemy HP."},
+    "Pattern Break": {"cooldown": 3, "description": "Resets the answer streak."},
+}
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_DIR = BASE_DIR / "static"
 CHARACTER_DIR = STATIC_DIR / "characters"
@@ -783,6 +794,33 @@ def apply_level_ups(database: Session, profile: StudentProfile) -> list[str]:
     return unlocked_rewards
 
 
+def apply_enemy_turn(battle: BattleSession) -> str | None:
+    battle.enemy_last_action = None
+    if battle.status != "active":
+        return None
+
+    battle.enemy_cooldown_remaining = max(0, battle.enemy_cooldown_remaining - 1)
+    if battle.enemy_cooldown_remaining > 0:
+        return None
+
+    if battle.enemy_ability == "Number Surge":
+        battle.player_hp = max(0, battle.player_hp - 10)
+        action = "Number Guardian used Number Surge and dealt 10 extra damage."
+    elif battle.enemy_ability == "Equation Shield":
+        restored = min(15, 100 - battle.enemy_hp)
+        battle.enemy_hp = min(100, battle.enemy_hp + 15)
+        action = f"Number Guardian used Equation Shield and restored {restored} HP."
+    elif battle.enemy_ability == "Pattern Break":
+        battle.streak = 0
+        action = "Number Guardian used Pattern Break and reset the answer streak."
+    else:
+        raise RuntimeError(f"Unknown enemy ability: {battle.enemy_ability}")
+
+    battle.enemy_last_action = action
+    battle.enemy_cooldown_remaining = battle.enemy_cooldown
+    return action
+
+
 def build_game_response(
     database: Session,
     profile: StudentProfile,
@@ -819,6 +857,10 @@ def build_game_response(
             "streak": battle.streak,
             "status": battle.status,
             "ability_used": battle.ability_used,
+            "enemy_ability": battle.enemy_ability,
+            "enemy_cooldown": battle.enemy_cooldown,
+            "enemy_cooldown_remaining": battle.enemy_cooldown_remaining,
+            "enemy_last_action": battle.enemy_last_action,
         },
         "mastery": mastery_dictionary(database, profile.id),
         "rewards": [
@@ -937,7 +979,8 @@ def start_battle(
     preferred = weakest_skill(database, profile.id, start_request.grade)
     prompt, expected, skill, hint = generate_problem(start_request.grade, preferred)
     stats = CHARACTERS[start_request.archetype]
-
+    enemy_ability = random.choice(list(ENEMY_ABILITIES))
+    enemy_cooldown = ENEMY_ABILITIES[enemy_ability]["cooldown"]
     battle = BattleSession(
         id=str(uuid.uuid4()),
         student_id=profile.id,
@@ -951,6 +994,10 @@ def start_battle(
         player_hp=stats["hp"],
         player_max_hp=stats["hp"],
         enemy_hp=100,
+        enemy_ability=enemy_ability,
+        enemy_cooldown=enemy_cooldown,
+        enemy_cooldown_remaining=enemy_cooldown,
+        enemy_last_action=None,
     )
     database.add(battle)
     database.commit()
@@ -1007,6 +1054,12 @@ def submit_answer(
         battle.streak = 0
 
     level_rewards = apply_level_ups(database, profile)
+
+    enemy_action = None
+    if battle.enemy_hp > 0 and battle.player_hp > 0:
+        enemy_action = apply_enemy_turn(battle)
+    if enemy_action:
+        message += " " + enemy_action
 
     if battle.enemy_hp <= 0:
         battle.status = "victory"

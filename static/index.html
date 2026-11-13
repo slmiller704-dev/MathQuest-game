@@ -1008,6 +1008,9 @@
                     <small id="enemyText">
                         100 HP
                     </small>
+                    <p id="enemyAbilityStatus" class="preview-status" aria-live="polite">
+                        Ability appears when battle starts.
+                    </p>
 
                 </div>
 
@@ -1162,6 +1165,8 @@
 
         const enemyText =
             $("enemyText");
+        const enemyAbilityStatus =
+            $("enemyAbilityStatus");
 
         const log =
             $("log");
@@ -1560,7 +1565,14 @@
 
             enemyText.textContent =
                 `${data.battle.enemy_hp} HP`;
-
+            if (data.battle.enemy_last_action) {
+                enemyAbilityStatus.textContent = data.battle.enemy_last_action;
+            } else {
+                const turns = data.battle.enemy_cooldown_remaining;
+                enemyAbilityStatus.textContent =
+                    `${data.battle.enemy_ability} • Ready in ${turns} ` +
+                    `turn${turns === 1 ? "" : "s"}`;
+            }
             log.textContent =
                 data.message || "";
 
